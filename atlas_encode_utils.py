@@ -11,18 +11,20 @@ def search_encode( args ):
     filetype: ...
     platform: Illumina etc..
     generic: generic search...
-    returntype: 'raw' (default), 'file', 'experiment', 'tissue',...
+    returntype: 'raw' (default), 'full', 'file', 'experiment', 'assay', 'tissue',...
     ---
     results:
 
+    EXAMPLE: search_encode( dict(tissue='breast cancer'))
+
     https://www.encodeproject.org/search/?type=Experiment&searchTerm=breast+cancer
 
-    >>> search_encode( dict(tissue='breast cancer'))
+    >>> search_encode( dict(tissue='breast cancer', returntype='full'))
     ''
     >>> search_encode( dict(tissue='breast cancer', returntype='experiment'))
     ''
     """
-    returntype = args['returntype']
+    returntype = args['returntype'] if 'returntype' in args else 'raw'
     search_args = ''
     for arg in args:
         if arg not in ['returntype']:
@@ -36,14 +38,16 @@ def encode_search_url( args ):
 
     url: url suffix to search
     searchtype: 'raw', 'experiment',...
-    returntype: 'raw' (default), 'file', 'experiment', 'tissue', 'platform',...
+    returntype: 'raw' (default), 'full', 'file', 'experiment', 'tissue', 'platform',...
     ---
     results:
 
+    >>> encode_search_url(dict(url="experiments/ENCSR000BDC/", searchtype="experiment", returntype="raw"))
+    ''
     >>> encode_search_url(dict(url="experiments/ENCSR000BDC/", searchtype="experiment", returntype="file"))
     ''
     """
-    returntype = args['returntype']
+    returntype = args['returntype'] if 'returntype' in args else 'raw'
     searchtype = args['searchtype'] if 'searchtype' in args else ''
     search_url = 'https://www.encodeproject.org/' + str(args['url']).lstrip('/')
     results_raw = quick_utils.get_request( dict(url=search_url, type='application/json'))
@@ -53,8 +57,43 @@ def encode_search_url( args ):
         return get_experiments_from_encode_json( dict(results=results_raw))
     elif returntype.lower() == 'file':
         return get_files_from_encode_json( dict(results=results_raw, searchtype=searchtype))
+    elif returntype.lower() == 'full':
+        return get_full_info_from_encode_json( dict(results=results_raw, searchtype=searchtype))
     else:
         return results_raw
+
+def get_full_info_from_encode_json( args ):
+    """ Get experiments with full info from an ENCODE search JSON.
+    results: results_raw
+    searchtype: searchtype
+    ---
+    fullinfo
+
+    https://www.encodeproject.org/search/?type=Experiment&searchTerm=breast+cancer
+    FOR EACH EXPERIMENT:
+        "assay_term_name": "ChIP-seq",
+        "assay_title": "Control ChIP-seq",
+        "biosample_ontology": {
+            "term_name": "MCF-7"
+        },
+        "biosample_summary": "Homo sapiens MCF-7",
+        "dbxrefs": [
+            "GEO:GSM1010854", <--
+            "UCSC-ENCODE-hg19:wgEncodeEH003428"
+        ],
+
+    """
+    results = args['results']
+    expts_full_info = []
+    for fullexpt in results["@graph"]:
+        expt = {}
+        expt['experiment'] = str(fullexpt["@id"])
+        expt['assaytype'] = str(fullexpt["assay_term_name"])
+        expt['celltype'] = str(fullexpt["biosample_ontology"]["term_name"])
+        expt['species'] = ' '.join(str(fullexpt["biosample_summary"]).split(' ')[0:2])
+        expt['accession'] = list(fullexpt["dbxrefs"])
+        expts_full_info.append(expt)
+    return expts_full_info
 
 def get_experiments_from_encode_json( args ):
     """ Get experiment IDs from an ENCODE search JSON.
