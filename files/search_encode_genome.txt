@@ -1,0 +1,11 @@
+ID	number_of_datasets	link
+GRCh38	15768	?type=Experiment&assembly=GRCh38
+hg19	9087	?type=Experiment&assembly=hg19
+mm10	2665	?type=Experiment&assembly=mm10
+dm6	1167	?type=Experiment&assembly=dm6
+ce11	950	?type=Experiment&assembly=ce11
+dm3	932	?type=Experiment&assembly=dm3
+ce10	840	?type=Experiment&assembly=ce10
+mm9	39	?type=Experiment&assembly=mm9
+mm10-minimal	12	?type=Experiment&assembly=mm10-minimal
+GRCh38-minimal	1	?type=Experiment&assembly=GRCh38-minimal

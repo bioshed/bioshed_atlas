@@ -1,0 +1,14 @@
+ID	number_of_datasets	link
+histone	5001	?type=Experiment&target.investigated_as=histone
+transcription factor	4297	?type=Experiment&target.investigated_as=transcription%20factor
+broad histone mark	2872	?type=Experiment&target.investigated_as=broad%20histone%20mark
+narrow histone mark	2019	?type=Experiment&target.investigated_as=narrow%20histone%20mark
+RNA binding protein	1287	?type=Experiment&target.investigated_as=RNA%20binding%20protein
+chromatin remodeler	452	?type=Experiment&target.investigated_as=chromatin%20remodeler
+RNA polymerase complex	328	?type=Experiment&target.investigated_as=RNA%20polymerase%20complex
+cofactor	307	?type=Experiment&target.investigated_as=cofactor
+other context	246	?type=Experiment&target.investigated_as=other%20context
+DNA repair	98	?type=Experiment&target.investigated_as=DNA%20repair
+cohesin	96	?type=Experiment&target.investigated_as=cohesin
+DNA replication	62	?type=Experiment&target.investigated_as=DNA%20replication
+tag	10	?type=Experiment&target.investigated_as=tag

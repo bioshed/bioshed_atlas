@@ -1,0 +1,33 @@
+Alzheimer's disease	229?type=Experiment&replicates.library.biosample.disease_term_name=Alzheimer%27s+disease	
+multiple sclerosis	207	?type=Experiment&replicates.library.biosample.disease_term_name=multiple+sclerosis
+mild cognitive impairment	151	?type=Experiment&replicates.library.biosample.disease_term_name=mild+cognitive+impairment
+Cognitive impairment	69	?type=Experiment&replicates.library.biosample.disease_term_name=Cognitive+impairment
+nonobstructive coronary artery disease	36	?type=Experiment&replicates.library.biosample.disease_term_name=nonobstructive+coronary+artery+disease
+amyotrophic lateral sclerosis	28	?type=Experiment&replicates.library.biosample.disease_term_name=amyotrophic+lateral+sclerosis
+squamous cell carcinoma	15	?type=Experiment&replicates.library.biosample.disease_term_name=squamous+cell+carcinoma
+basal cell carcinoma	14	?type=Experiment&replicates.library.biosample.disease_term_name=basal+cell+carcinoma
+Adenoid Cystic Carcinoma	2	?type=Biosample&searchTerm=Adenoid%20Cystic%20Carcinoma
+Astrocytoma	1	?type=Biosample&searchTerm=Astrocytoma
+Brain Tumor	1	?type=Biosample&searchTerm="brain%20tumor"
+Breast Cancer	293	?type=Experiment&searchTerm="breast%20cancer"
+Ewing Sarcoma	27	?type=Experiment&searchTerm="Ewing%20Sarcoma"
+Glioblastoma	10	?type=Experiment&searchTerm=Glioblastoma
+Leukemia	2641	?type=Experiment&searchTerm=Leukemia
+Leukemia - Acute Lymphoblastic	33	search/?type=Experiment&searchTerm=Leukemia%20Acute%20Lymphoblastic
+Leukemia Acute Myeloid AML	39	?type=Biosample&searchTerm=Leukemia%20Acute%20Myeloid
+Leukemia B-cell Prolymphocytic Leukemia and Hairy Cell Leukemia
+Leukemia Chronic Lymphocytic CLL	2	?type=Experiment&searchTerm=Leukemia%20Chronic%20Lymphocytic
+Leukemia Chronic T-Cell Lymphocytic	1	?type=Experiment&searchTerm=Leukemia%20Chronic%20T-Cell%20Lymphocytic
+Lung Cancer	18	?type=Experiment&searchTerm="Lung%20Cancer"
+Lung Cancer Non-Small Cell	2	?type=Experiment&searchTerm=Lung%20Cancer%20Non-Small%20Cell
+Lymphoma	122	?type=Experiment&searchTerm=Lymphoma
+Lymphoma Non-Hodgkin	22	?type=Experiment&searchTerm=Lymphoma%20Non-Hodgkin
+Medulloblastoma	8	?type=Experiment&searchTerm=Medulloblastoma
+Melanoma	26	?type=Experiment&searchTerm="melanoma"
+Mesothelioma	1	?type=Experiment&searchTerm=Mesothelioma
+Multiple Myeloma	7	/?type=Biosample&searchTerm="Multiple%20Myeloma"
+Neuroblastoma	229	/?type=Experiment&searchTerm=Neuroblastoma
+Prostate Cancer	4	/?type=Biosample&searchTerm="Prostate%20Cancer"
+Renal Carcinoma	3	?type=Experiment&searchTerm="Renal%20Carcinoma"
+Retinoblastoma	12	?type=Experiment&searchTerm=Retinoblastoma
+Rhabdomyosarcoma	3	?type=Experiment&searchTerm=Rhabdomyosarcoma

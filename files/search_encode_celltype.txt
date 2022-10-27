@@ -1,0 +1,30 @@
+ID	number_of_datasets	link
+cancer cell	6422	?type=Experiment&biosample_ontology.cell_slims=cancer%20cell
+hematopoietic cell	5647	?type=Experiment&biosample_ontology.cell_slims=hematopoietic%20cell
+leukocyte	5448	?type=Experiment&biosample_ontology.cell_slims=leukocyte
+epithelial cell	3721	?type=Experiment&biosample_ontology.cell_slims=epithelial%20cell
+T cell	1477	?type=Experiment&biosample_ontology.cell_slims=T%20cell
+stem cell	1118	?type=Experiment&biosample_ontology.cell_slims=stem%20cell
+B cell	1046	?type=Experiment&biosample_ontology.cell_slims=B%20cell
+CD4+ T cell	769	?type=Experiment&biosample_ontology.cell_slims=CD4+%20T%20cell
+connective tissue cell	766	?type=Experiment&biosample_ontology.cell_slims=connective%20tissue%20cell
+embryonic cell	678	?type=Experiment&biosample_ontology.cell_slims=embryonic%20cell
+fibroblast	669	?type=Experiment&biosample_ontology.cell_slims=fibroblast
+neural cell	456	?type=Experiment&biosample_ontology.cell_slims=neural%20cell
+CD8+ T cell	426	?type=Experiment&biosample_ontology.cell_slims=CD8+%20T%20cell
+myeloid cell	395	?type=Experiment&biosample_ontology.cell_slims=myeloid%20cell
+induced pluripotent stem cell	287	?type=Experiment&biosample_ontology.cell_slims=induced%20pluripotent%20stem%20cell
+neuroblastoma cell	226	?type=Experiment&biosample_ontology.cell_slims=neuroblastoma%20cell
+progenitor cell	180	?type=Experiment&biosample_ontology.cell_slims=progenitor%20cell
+keratinocyte	160	?type=Experiment&biosample_ontology.cell_slims=keratinocyte
+endothelial cell	149	?type=Experiment&biosample_ontology.cell_slims=endothelial%20cell
+NK cell	108	?type=Experiment&biosample_ontology.cell_slims=NK%20cell
+monocyte	108	?type=Experiment&biosample_ontology.cell_slims=monocyte
+myoblast	76	?type=Experiment&biosample_ontology.cell_slims=myoblast
+lymphoblast	64	?type=Experiment&biosample_ontology.cell_slims=lymphoblast
+cardiocyte	62	?type=Experiment&biosample_ontology.cell_slims=cardiocyte
+mononuclear cell	58	?type=Experiment&biosample_ontology.cell_slims=mononuclear%20cell
+melanocyte	48	?type=Experiment&biosample_ontology.cell_slims=melanocyte
+smooth muscle cell	46	?type=Experiment&biosample_ontology.cell_slims=smooth%20muscle%20cell
+dendritic cell	9	?type=Experiment&biosample_ontology.cell_slims=dendritic%20cell
+pericyte	8	?type=Experiment&biosample_ontology.cell_slims=pericyte

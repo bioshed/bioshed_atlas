@@ -1,0 +1,64 @@
+ID	number_of_datasets	link
+fastq	22252	?type=Experiment&files.file_type=fastq
+bam	20897	?type=Experiment&files.file_type=bam
+bigWig	18194	?type=Experiment&files.file_type=bigWig
+bed	23206	?type=Experiment&files.file_type=bed%20bed12&files.file_type=bed%20bed3&files.file_type=bed%20bed3+&files.file_type=bed%20bed6+&files.file_type=bed%20bed9&files.file_type=bed%20bed9+&files.file_type=bed%20bedExonScore&files.file_type=bed%20bedGraph&files.file_type=bed%20bedLogR&files.file_type=bed%20bedMethyl&files.file_type=bed%20bedRnaElements&files.file_type=bed%20broadPeak&files.file_type=bed%20idr_peak&files.file_type=bed%20idr_ranked_peak&files.file_type=bed%20modPepMap&files.file_type=bed%20narrowPeak&files.file_type=bed%20pepMap&files.file_type=bed%20peptideMapping&files.file_type=bed%20tss_peak&
+bigBed	17819	?type=Experiment&files.file_type=bigBed%20bed12&files.file_type=bigBed%20bed3&files.file_type=bigBed%20bed3+&files.file_type=bigBed%20bed6+&files.file_type=bigBed%20bed9&files.file_type=bigBed%20bed9+&files.file_type=bigBed%20bedExonScore&files.file_type=bigBed%20bedLogR&files.file_type=bigBed%20bedMethyl&files.file_type=bigBed%20bedRnaElements&files.file_type=bigBed%20broadPeak&files.file_type=bigBed%20idr_peak&files.file_type=bigBed%20modPepMap&files.file_type=bigBed%20narrowPeak&files.file_type=bigBed%20pepMap&files.file_type=bigBed%20peptideMapping&files.file_type=bigBed%20tss_peak
+bed narrowPeak	12284	?type=Experiment&files.file_type=bed%20narrowPeak
+bigBed narrowPeak	12282	?type=Experiment&files.file_type=bigBed%20narrowPeak
+bed idr_ranked_peak	4137	?type=Experiment&files.file_type=bed%20idr_ranked_peak
+tsv	4095	?type=Experiment&files.file_type=tsv
+bed broadPeak	2593	?type=Experiment&files.file_type=bed%20broadPeak
+bed bed3+	2199	?type=Experiment&files.file_type=bed%20bed3+
+bigBed broadPeak	2134	?type=Experiment&files.file_type=bigBed%20broadPeak
+bigBed bed3+	1960	?type=Experiment&files.file_type=bigBed%20bed3+
+starch	1814	?type=Experiment&files.file_type=starch
+tagAlign	1368	?type=Experiment&files.file_type=tagAlign
+tar	1343	?type=Experiment&files.file_type=tar
+sra	672	?type=Experiment&files.file_type=sra
+gtf	445	?type=Experiment&files.file_type=gtf
+bed bedRnaElements	288	?type=Experiment&files.file_type=bed%20bedRnaElements
+bigBed bedRnaElements	288	?type=Experiment&files.file_type=bigBed%20bedRnaElements
+bed bedMethyl	284	?type=Experiment&files.file_type=bed%20bedMethyl
+bigBed bedMethyl	284	?type=Experiment&files.file_type=bigBed%20bedMethyl
+idat	274	?type=Experiment&files.file_type=idat
+bed tss_peak	235	?type=Experiment&files.file_type=bed%20tss_peak
+bigBed tss_peak	235	?type=Experiment&files.file_type=bigBed%20tss_peak
+gff gff3	235	?type=Experiment&files.file_type=gff%20gff3
+bed bed9+	226	?type=Experiment&files.file_type=bed%20bed9+
+hic	212	?type=Experiment&files.file_type=hic
+bigBed bed9+	210	?type=Experiment&files.file_type=bigBed%20bed9+
+bedpe	179	?type=Experiment&files.file_type=bedpe
+bed bedGraph	174	?type=Experiment&files.file_type=bed%20bedGraph
+bigInteract	144	?type=Experiment&files.file_type=bigInteract
+bed idr_peak	134	?type=Experiment&files.file_type=bed%20idr_peak
+bigBed idr_peak	134	?type=Experiment&files.file_type=bigBed%20idr_peak
+bed bed6+	115	?type=Experiment&files.file_type=bed%20bed6+
+bigBed bed6+	115	?type=Experiment&files.file_type=bigBed%20bed6+
+rcc	115	?type=Experiment&files.file_type=rcc
+bed bedLogR	64	?type=Experiment&files.file_type=bed%20bedLogR
+bigBed bedLogR	63	?type=Experiment&files.file_type=bigBed%20bedLogR
+sam	59	?type=Experiment&files.file_type=sam
+wig	59	?type=Experiment&files.file_type=wig
+bed bed12	42	?type=Experiment&files.file_type=bed%20bed12
+bigBed bed12	42	?type=Experiment&files.file_type=bigBed%20bed12
+bed bedExonScore	27	?type=Experiment&files.file_type=bed%20bedExonScore
+bigBed bedExonScore	27	?type=Experiment&files.file_type=bigBed%20bedExonScore
+csfasta	25	?type=Experiment&files.file_type=csfasta
+fasta	25	?type=Experiment&files.file_type=fasta
+h5ad	24	?type=Experiment&files.file_type=h5ad
+vcf	23	?type=Experiment&files.file_type=vcf
+pairs	20	?type=Experiment&files.file_type=pairs
+hdf5	19	?type=Experiment&files.file_type=hdf5
+bed bed9	18	?type=Experiment&files.file_type=bed%20bed9
+bigBed bed9	18	?type=Experiment&files.file_type=bigBed%20bed9
+csqual	13	?type=Experiment&files.file_type=csqual
+bed peptideMapping	8	?type=Experiment&files.file_type=bed%20peptideMapping
+bigBed peptideMapping	8	?type=Experiment&files.file_type=bigBed%20peptideMapping
+bed bed3	7	?type=Experiment&files.file_type=bed%20bed3
+bigBed bed3	7	?type=Experiment&files.file_type=bigBed%20bed3
+bed modPepMap	6	?type=Experiment&files.file_type=bed%20modPepMap
+bed pepMap	6	?type=Experiment&files.file_type=bed%20pepMap
+bigBed modPepMap	6	?type=Experiment&files.file_type=bigBed%20modPepMap
+bigBed pepMap	6	?type=Experiment&files.file_type=bigBed%20pepMap
+CEL	4	?type=Experiment&files.file_type=CEL

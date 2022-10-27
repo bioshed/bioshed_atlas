@@ -1,0 +1,13 @@
+ID	number_of_datasets	link
+DNA binding	13034	?type=Experiment&assay_slims=DNA%20binding
+Transcription	5655	?type=Experiment&assay_slims=Transcription
+DNA accessibility	2858	?type=Experiment&assay_slims=DNA%20accessibility
+DNA methylation	884	?type=Experiment&assay_slims=DNA%20methylation
+Single cell	863	?type=Experiment&assay_slims=Single%20cell
+RNA binding	829	?type=Experiment&assay_slims=RNA%20binding
+3D chromatin structure	329	?type=Experiment&assay_slims=3D%20chromatin%20structure
+Replication timing	182	?type=Experiment&assay_slims=Replication%20timing
+Genotyping	148	?type=Experiment&assay_slims=Genotyping
+DNA sequencing	53	?type=Experiment&assay_slims=DNA%20sequencing
+Proteomics	14	?type=Experiment&assay_slims=Proteomics
+RNA structure	8	?type=Experiment&assay_slims=RNA%20structure

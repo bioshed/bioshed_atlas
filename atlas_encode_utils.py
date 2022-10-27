@@ -6,15 +6,6 @@ import quick_utils
 
 DEFAULT_SEARCH_FILE = "search_encode.txt"
 
-def print_dataframe( df ):
-    """ Print pandas dataframe to command line
-    """
-    pd.set_option('display.expand_frame_repr', False)
-    pd.set_option('display.max_colwidth', 50)
-    pd.set_option('display.precision', 2)
-    print(df)
-    return
-
 def search_encode( args ):
     """ Entrypoint for an ENCODE search.
     $ bioshed search encode <searchterms>
@@ -25,6 +16,11 @@ def search_encode( args ):
     searchterms: search terms input by user
     ---
     results: data frame of results
+
+    >>> search_encode( dict(searchterms='breast cancer rna-seq'))
+    ''
+    >>> search_encode( dict(searchterms='--tissue heart --assay chip-seq'))
+    ''
 
     Prints number of experiment datasets found and where results are output to (search_encode.txt).
     Outputs search results to search_encode.txt (tab-delimited text)
@@ -61,39 +57,6 @@ def search_encode( args ):
         url_search_string = combine_search_strings(url_search_string, convert_to_search_string( dict(terms=terms, category=category)))
     return encode_search_url( dict(url='/search/{}'.format(url_search_string), searchtype='full', returntype='full'))
 
-def search_encode_general( args ):
-    """ Search ENCODE for datasets using general search terms.
-    tissue: same as organ...
-    celltype: ...
-    assaytype: ...
-    species: ...
-    filetype: ...
-    platform: Illumina etc..
-    generic: generic search...
-    returntype: 'raw' (default), 'full', 'file', 'experiment', 'assay', 'tissue',...
-    ---
-    results:
-
-    EXAMPLE: search_encode( dict(tissue='breast cancer'))
-
-    https://www.encodeproject.org/search/?type=Experiment&searchTerm=breast+cancer
-
-    >>> search_encode( dict(tissue='breast cancer', returntype='full'))
-    ''
-    >>> search_encode( dict(tissue='breast cancer', returntype='experiment'))
-    ''
-    >>> search_encode( dict(tissue='breast cancer', returntype='assay'))
-    ''
-    """
-    returntype = args['returntype'] if 'returntype' in args else 'full'
-    search_args = ''
-    for arg in args:
-        if arg not in ['returntype']:
-            search_args += args[arg].replace(' ','%20') if arg in args else ''
-    search_url = '/search/?type=Experiment&searchTerm={}'.format(search_args)
-    results = encode_search_url( dict(url=search_url, searchtype='full', returntype=returntype))
-    print_dataframe( results )
-    return results
 
 def encode_search_url( args ):
     """ Searches ENCODE by a URL suffix.
@@ -172,6 +135,10 @@ def get_full_info_from_encode_json( args ):
                 tbl['species'].append(' '.join(str(fullexpt["biosample_summary"]).split(' ')[0:2]) if "biosample_summary" in fullexpt else '')
                 tbl['accession'].append(list(fullexpt["dbxrefs"]) if "dbxrefs" in fullexpt else [])
                 tbl['file'].append(list(map(lambda f: f["@id"], fullexpt["files"])) if "files" in fullexpt else [])
+        print('Number of experiment datasets found: {}'.format(str(len(tbl['experiment']))))
+        print('Number of assays found: {}'.format(str(len(list(set(tbl['assay']))))))
+        print('Number of cell types found: {}'.format(str(len(list(set(tbl['celltype']))))))
+        print('Number of total files found: {}'.format(str(sum([len(e) for e in tbl['file']]))))
     elif sortby == 'assay':
         # create joined table for gathering info
         jtbl = {}  # key is assay
@@ -210,6 +177,8 @@ def get_full_info_from_encode_json( args ):
 def get_experiments_from_encode_json( args ):
     """ Get experiment IDs from an ENCODE search JSON.
     results: results JSON from a raw search.
+    ---
+    expts: list of experiments in URL format (/experiments/ENCSR000ACHE/,...)
 
     https://www.encodeproject.org/experiments/ENCSR000AHE/
     """
@@ -221,20 +190,35 @@ def get_experiments_from_encode_json( args ):
 
 def get_files_from_encode_json( args ):
     """ Get files from an ENCODE results JSON
-    results: results_raw
-    searchtype: searchtype
+    results: results JSON from a raw ENCODE search
+    searchtype: the type of raw ENCODE search passed in
+    cloud: which remote cloud (aws/s3 or google/gcp or microsoft/azure)
     ---
-    relevant_files
+    relevant_files: list of S3 file URIs
 
     """
     results = args['results']
     searchtype = args['searchtype'] if 'searchtype' in args else ''
+    cloud = args['cloud'] if 'cloud' in args else 's3'
+
     relevant_files = []
     if searchtype=='experiment':
         # original search was an experiment
         for f in results["files"]:
-            relevant_files.append(f["s3_uri"])
+            if cloud in ['s3','aws','amazon']:
+                relevant_files.append(f["s3_uri"])
     return relevant_files
+
+########################## HELPER FUNCTIONS ############################
+
+def print_dataframe( df ):
+    """ Print pandas dataframe to command line
+    """
+    pd.set_option('display.expand_frame_repr', False)
+    pd.set_option('display.max_colwidth', 50)
+    pd.set_option('display.precision', 2)
+    print(df)
+    return
 
 def convert_to_search_string( args ):
     """ Given a category and search terms, outputs an updated url search string
@@ -256,11 +240,11 @@ def convert_to_search_string( args ):
     if os.path.exists(pre_search_file):
         df = pd.read_csv(pre_search_file, sep='\t')
         if 'link' in df.columns and 'ID' in df.columns:
-            pd_query = df.query('ID'==category)['link']
+            pd_query = df[df['ID']==terms]['link'] # df.query('ID=={}'.format(terms))['link']
             if len(pd_query) > 0:
                 search_string = pd_query.values[0]
     if search_string == '':
-        search_string = '?type=Experiment&searchTerm={}'.format(terms.replace(' ','+'))
+        search_string = '?type=Experiment&searchTerm={}'.format(terms.lower().replace(' ','+'))
     return search_string
 
 def combine_search_strings( ss1, ss2 ):
@@ -280,3 +264,39 @@ def combine_search_strings( ss1, ss2 ):
         return ss1
     else:
         return ''
+
+########################## DEPRECATED ############################
+
+def search_encode_general( args ):
+    """ Search ENCODE for datasets using general search terms.
+    tissue: same as organ...
+    celltype: ...
+    assaytype: ...
+    species: ...
+    filetype: ...
+    platform: Illumina etc..
+    generic: generic search...
+    returntype: 'raw' (default), 'full', 'file', 'experiment', 'assay', 'tissue',...
+    ---
+    results:
+
+    EXAMPLE: search_encode( dict(tissue='breast cancer'))
+
+    https://www.encodeproject.org/search/?type=Experiment&searchTerm=breast+cancer
+
+    >>> search_encode( dict(tissue='breast cancer', returntype='full'))
+    ''
+    >>> search_encode( dict(tissue='breast cancer', returntype='experiment'))
+    ''
+    >>> search_encode( dict(tissue='breast cancer', returntype='assay'))
+    ''
+    """
+    returntype = args['returntype'] if 'returntype' in args else 'full'
+    search_args = ''
+    for arg in args:
+        if arg not in ['returntype']:
+            search_args += args[arg].replace(' ','%20') if arg in args else ''
+    search_url = '/search/?type=Experiment&searchTerm={}'.format(search_args)
+    results = encode_search_url( dict(url=search_url, searchtype='full', returntype=returntype))
+    print_dataframe( results )
+    return results

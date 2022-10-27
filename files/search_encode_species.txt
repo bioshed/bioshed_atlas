@@ -1,0 +1,12 @@
+ID	number_of_datasets	link
+Homo sapiens	17850	?type=Experiment&replicates.library.biosample.donor.organism.scientific_name=Homo%20sapiens
+Mus musculus	2808	?type=Experiment&replicates.library.biosample.donor.organism.scientific_name=Mus%20musculus
+Drosophila melanogaster	1789	?type=Experiment&replicates.library.biosample.donor.organism.scientific_name=Drosophila%20melanogaster
+Caenorhabditis elegans	1245	?type=Experiment&replicates.library.biosample.donor.organism.scientific_name=Caenorhabditis%20elegans
+Drosophila pseudoobscura	12	?type=Experiment&replicates.library.biosample.donor.organism.scientific_name=Drosophila%20pseudoobscura
+Drosophila simulans	8	?type=Experiment&replicates.library.biosample.donor.organism.scientific_name=Drosophila%20simulans
+Drosophila mojavensis	4	?type=Experiment&replicates.library.biosample.donor.organism.scientific_name=Drosophila%20mojavensis
+Drosophila ananassae	1	?type=Experiment&replicates.library.biosample.donor.organism.scientific_name=Drosophila%20ananassae
+Drosophila virilis	1	?type=Experiment&replicates.library.biosample.donor.organism.scientific_name=Drosophila%20virilis
+Drosophila yakuba	1	?type=Experiment&replicates.library.biosample.donor.organism.scientific_name=Drosophila%20yakuba
+Trichechus manatus	1	?type=Experiment&replicates.library.biosample.donor.organism.scientific_name=Trichechus%20manatus

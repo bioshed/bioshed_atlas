@@ -1,0 +1,75 @@
+TF ChIP-seq	4969
+Histone ChIP-seq	3999
+Control ChIP-seq	2904
+DNase-seq	1865
+total RNA-seq	1170
+Mint-ChIP-seq	987
+polyA plus RNA-seq	912
+shRNA RNA-seq	668
+ATAC-seq	555
+scRNA-seq	507
+microRNA-seq	418
+CRISPR RNA-seq	415
+snATAC-seq	353
+RNA microarray	291
+WGBS	278
+DNAme array	257
+Control eCLIP	253
+eCLIP	246
+RRBS	218
+RNA Bind-n-Seq	216
+small RNA-seq	216
+ChIA-PET	209
+long read RNA-seq	197
+Control Mint-ChIP-seq	175
+RAMPAGE	168
+genotyping array	142
+CAGE	121
+Repli-seq	119
+microRNA counts	115
+siRNA RNA-seq	113
+in situ Hi-C	104
+CRISPRi RNA-seq	77
+RIP-seq	73
+MRE-seq	68
+Repli-chip	63
+MeDIP-seq	55
+PAS-seq	54
+WGS	52
+Bru-seq	49
+GM DNase-seq	46
+FAIRE-seq	37
+BruChase-seq	32
+RIP-chip	32
+polyA minus RNA-seq	32
+RNA-PET	31
+PRO-cap	25
+PRO-seq	22
+BruUV-seq	16
+MS-MS	14
+5C	13
+TAB-seq	8
+iCLIP	7
+DNA-PET	6
+icSHAPE	6
+GRO-cap	4
+SPRITE	3
+long read scRNA-seq	3
+5' RLM RACE	2
+MNase-seq	2
+Switchgear	2
+icLASER	2
+Circulome-seq	1
+histone	5001	?type=Experiment&target.investigated_as=histone
+transcription factor	4297	?type=Experiment&target.investigated_as=transcription%20factor
+broad histone mark	2872	?type=Experiment&target.investigated_as=broad%20histone%20mark
+narrow histone mark	2019	?type=Experiment&target.investigated_as=narrow%20histone%20mark
+RNA binding protein	1287	?type=Experiment&target.investigated_as=RNA%20binding%20protein
+chromatin remodeler	452	?type=Experiment&target.investigated_as=chromatin%20remodeler
+RNA polymerase complex	328	?type=Experiment&target.investigated_as=RNA%20polymerase%20complex
+cofactor	307	?type=Experiment&target.investigated_as=cofactor
+other context	246	?type=Experiment&target.investigated_as=other%20context
+DNA repair	98	?type=Experiment&target.investigated_as=DNA%20repair
+cohesin	96	?type=Experiment&target.investigated_as=cohesin
+DNA replication	62	?type=Experiment&target.investigated_as=DNA%20replication
+tag	10	?type=Experiment&target.investigated_as=tag

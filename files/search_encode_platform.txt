@@ -1,0 +1,44 @@
+ID	number_of_datasets	link
+Affymetrix	4	?type=Experiment&files.platform.term_name=Affymetrix%20-%20Human%20Exon%201.0%20ST%20V2%20tilling%20array
+Applied Biosystems	50	?type=Experiment&files.platform.term_name=Applied%20Biosystems%20SOLiD%20System%203%20Plus
+Illumina	24214	?type=Experiment&files.platform.term_name=Illumina%20HiSeq%202000&files.platform.term_name=Illumina%20HiSeq%202500&files.platform.term_name=Illumina%20HiSeq%204000&files.platform.term_name=Illumina%20NextSeq%20500&files.platform.term_name=Illumina%20Genome%20Analyzer%20IIxt&files.platform.term_name=Illumina%20NovaSeq%206000&files.platform.term_name=Illumina%20Genome%20Analyzer&files.platform.term_name=Illumina%20Genome%20Analyzer%20II&files.platform.term_name=Illumina%20NextSeq%202000&files.platform.term_name=Illumina%20Infinium%20Methylation%20EPIC%20BeadChip&files.platform.term_name=Illumina%20Genome%20Analyzer%20I&files.platform.term_name=Illumina%20Genome%20Analyzer%20IIe&files.platform.term_name=Illumina%20HiSeq%20X%20Ten&files.platform.term_name=Illumina%20MiSeq&files.platform.term_name=Illumina%20-%20Methylation%20450K%20BeadChip&files.platform.term_name=Illumina%20Infinium%20Omni5Exome-4%20Kit&files.platform.term_name=Illumina%20HiSeq%201000
+Nanostring	115	?type=Experiment&files.platform.term_name=nCounter%20Mouse%20V1.3%20miRNA%20Expression%20array&files.platform.term_name=nCounter%20Human%20V2%20miRNA%20Expression%20array&files.platform.term_name=nCounter%20Mouse%20V1.5%20miRNA%20Expression%20array&files.platform.term_name=nCounter%20Mouse%20V1.2%20miRNA%20Expression%20array
+Nimblegen	54	?type=Experiment&files.platform.term_name=Nimbelgen%20-%20Human%203x720K%20Whole%20Genome%20CGH%20Tiling%20Array&files.platform.term_name=Nimblegen%20-%20Human%206x630K%20CGH%20Whole%20Genome%20tiling%20array&files.platform.term_name=Nimblegen%20-%20Human%202.1M%20Whole-Genome%20CGH%20Tiling%20Array%20v2.0
+Oxford Nanopore	34	?type=Experiment&files.platform.term_name=Oxford%20Nanopore%20MinION&files.platform.term_name=Oxford%20Nanopore%20PromethION
+Pacific Biosciences	174	?type=Experiment&files.platform.term_name=Pacific%20Biosciences%20Sequel%20II&files.platform.term_name=Pacific%20Biosciences%20Sequel&files.platform.term_name=Pacific%20Biosciences%20RS%20II
+Roche	2	?type=Experiment&files.platform.term_name=Roche%20454%20Genome%20Sequencer%20FLX
+Illumina HiSeq 2000	6539	?type=Experiment&files.platform.term_name=Illumina%20HiSeq%202000
+Illumina HiSeq 2500	3756	?type=Experiment&files.platform.term_name=Illumina%20HiSeq%202500
+Illumina HiSeq 4000	3391	?type=Experiment&files.platform.term_name=Illumina%20HiSeq%204000
+Illumina NextSeq 500	2912	?type=Experiment&files.platform.term_name=Illumina%20NextSeq%20500
+Illumina Genome Analyzer IIx	2418	?type=Experiment&files.platform.term_name=Illumina%20Genome%20Analyzer%20IIx
+Illumina NovaSeq 6000	2402	?type=Experiment&files.platform.term_name=Illumina%20NovaSeq%206000
+Illumina Genome Analyzer	977	?type=Experiment&files.platform.term_name=Illumina%20Genome%20Analyzer
+Illumina Genome Analyzer II	764	?type=Experiment&files.platform.term_name=Illumina%20Genome%20Analyzer%20II
+Illumina NextSeq 2000	371	?type=Experiment&files.platform.term_name=Illumina%20NextSeq%202000
+Illumina Infinium Methylation EPIC BeadChip	153	?type=Experiment&files.platform.term_name=Illumina%20Infinium%20Methylation%20EPIC%20BeadChip
+Pacific Biosciences Sequel II	146	?type=Experiment&files.platform.term_name=Pacific%20Biosciences%20Sequel%20II
+Illumina Genome Analyzer I	135	?type=Experiment&files.platform.term_name=Illumina%20Genome%20Analyzer%20I
+Illumina Genome Analyzer IIe	97	?type=Experiment&files.platform.term_name=Illumina%20Genome%20Analyzer%20IIe
+Illumina HiSeq X Ten	90	?type=Experiment&files.platform.term_name=Illumina%20HiSeq%20X%20Ten
+Illumina MiSeq	80	?type=Experiment&files.platform.term_name=Illumina%20MiSeq
+Illumina - Methylation 450K BeadChip	62	?type=Experiment&files.platform.term_name=Illumina%20-%20Methylation%20450K%20BeadChip
+Illumina Infinium Omni5Exome-4 Kit	59	?type=Experiment&files.platform.term_name=Illumina%20Infinium%20Omni5Exome-4%20Kit
+nCounter Mouse V1.3 miRNA Expression array	58	?type=Experiment&files.platform.term_name=nCounter%20Mouse%20V1.3%20miRNA%20Expression%20array
+Applied Biosystems SOLiD System 3 Plus	50	?type=Experiment&files.platform.term_name=Applied%20Biosystems%20SOLiD%20System%203%20Plus
+nCounter Human V2 miRNA Expression array	38	?type=Experiment&files.platform.term_name=nCounter%20Human%20V2%20miRNA%20Expression%20array
+Nimbelgen - Human 3x720K Whole Genome CGH Tiling Array	34	?type=Experiment&files.platform.term_name=Nimbelgen%20-%20Human%203x720K%20Whole%20Genome%20CGH%20Tiling%20Array
+Oxford Nanopore MinION	28	?type=Experiment&files.platform.term_name=Oxford%20Nanopore%20MinION
+Pacific Biosciences Sequel	25	?type=Experiment&files.platform.term_name=Pacific%20Biosciences%20Sequel
+Mouse 385K Whole Genome CGH Tiling Array	16	?type=Experiment&files.platform.term_name=Mouse%20385K%20Whole%20Genome%20CGH%20Tiling%20Array
+nCounter Mouse V1.5 miRNA Expression array	14	?type=Experiment&files.platform.term_name=nCounter%20Mouse%20V1.5%20miRNA%20Expression%20array
+Nimblegen - Human 6x630K CGH Whole Genome tiling array	12	?type=Experiment&files.platform.term_name=Nimblegen%20-%20Human%206x630K%20CGH%20Whole%20Genome%20tiling%20array
+Illumina HiSeq 1000	8	?type=Experiment&files.platform.term_name=Illumina%20HiSeq%201000
+Nimblegen - Human 2.1M Whole-Genome CGH Tiling Array v2.0	8	?type=Experiment&files.platform.term_name=Nimblegen%20-%20Human%202.1M%20Whole-Genome%20CGH%20Tiling%20Array%20v2.0
+Oxford Nanopore PromethION	6	?type=Experiment&files.platform.term_name=Oxford%20Nanopore%20PromethION
+nCounter Mouse V1.2 miRNA Expression array	5	?type=Experiment&files.platform.term_name=nCounter%20Mouse%20V1.2%20miRNA%20Expression%20array
+Affymetrix - Human Exon 1.0 ST V2 tilling array	4	?type=Experiment&files.platform.term_name=Affymetrix%20-%20Human%20Exon%201.0%20ST%20V2%20tilling%20array
+ddSEQ Single-Cell Isolator	3	?type=Experiment&files.platform.term_name=ddSEQ%20Single-Cell%20Isolator
+Mouse 3x720K Whole Genome CGH Tiling Array	2	?type=Experiment&files.platform.term_name=Mouse%203x720K%20Whole%20Genome%20CGH%20Tiling%20Array
+Roche 454 Genome Sequencer FLX	2	?type=Experiment&files.platform.term_name=Roche%20454%20Genome%20Sequencer%20FLX
+Pacific Biosciences RS II	1	?type=Experiment&files.platform.term_name=Pacific%20Biosciences%20RS%20II
