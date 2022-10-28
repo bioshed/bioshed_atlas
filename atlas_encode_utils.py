@@ -184,6 +184,8 @@ def get_full_info_from_encode_json( args ):
         tbl_df = pd.DataFrame(tbl)
         tbl_df.index.name = 'index'
         tbl_df.to_csv(DEFAULT_SEARCH_FILE, sep='\t')
+        print('Search results written to {}.'.format(DEFAULT_SEARCH_FILE))
+        print('Type "bioshed download encode" to download data files or "bioshed download encode --list" for file info before downloading.')
         return tbl_df
     else:
         return tbl
