@@ -55,7 +55,7 @@ def search_encode( args ):
     search_results = {}
     # dictionary of search terms: {"general": "...", "tissue": "...", "celltype": "..."...}
     search_dict = atlas_utils.parse_search_terms( args['searchterms'] ) if ('searchterms' in args and args['searchterms'] != '') else {}
-    if search_dict == {}:
+    if search_dict == {} or 'help' in search_dict:
         print_encode_help()
     else:
         # start with search url base and build it according to search terms
@@ -246,7 +246,7 @@ def download_encode( args ):
     0	/experiments/ENCSR718YPN/	single-nucleus ATAC-seq	heart left ventricle	Homo sapiens	[]	['/files/ENCFF804ONU/', '/files/ENCFF393IGF/',...]
 
     [NOTE] Use str.contains:  df2 = df.loc[df['celltype'].str.contains('heart', case=False)]
-    [TODO] s3 file transfer function in aws_s3_utils
+    [DONE] s3 file transfer function in aws_s3_utils
     """
     dd = atlas_utils.parse_search_terms( args['downloadstr'] if 'downloadstr' in args else '')
     infile = dd['input'] if 'input' in dd else 'search_encode.txt'
