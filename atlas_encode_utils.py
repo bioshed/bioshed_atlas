@@ -3,6 +3,7 @@ import pandas as pd
 import atlas_utils
 sys.path.append('bioshed_utils/')
 import quick_utils
+import aws_s3_utils
 
 DEFAULT_SEARCH_FILE = "search_encode.txt"
 
@@ -20,6 +21,8 @@ def search_encode( args ):
     >>> search_encode( dict(searchterms='breast cancer rna-seq'))
     ''
     >>> search_encode( dict(searchterms='--tissue heart --assay chip-seq'))
+    ''
+    >>> search_encode( dict(searchterms='--assay single cell --tissue heart'))
     ''
 
     Prints number of experiment datasets found and where results are output to (search_encode.txt).
@@ -47,23 +50,27 @@ def search_encode( args ):
     $ bioshed search encode --help
     $ bioshed download encode --help
     """
-    # dictionary of search terms: {"general": "...", "tissue": "...", "celltype": "..."...}
-    search_dict = atlas_utils.parse_search_terms( args['searchterms'] )
-
     URL_BASE = 'https://encodeproject.org/search/'
-    # start with search url base and build it according to search terms
     url_search_string = ''
-    for category, terms in search_dict.items():
-        url_search_string = combine_search_strings(url_search_string, convert_to_search_string( dict(terms=terms, category=category)))
-    return encode_search_url( dict(url='/search/{}'.format(url_search_string), searchtype='full', returntype='full'))
-
+    search_results = {}
+    # dictionary of search terms: {"general": "...", "tissue": "...", "celltype": "..."...}
+    search_dict = atlas_utils.parse_search_terms( args['searchterms'] ) if ('searchterms' in args and args['searchterms'] != '') else {}
+    if search_dict == {}:
+        print_encode_help()
+    else:
+        # start with search url base and build it according to search terms
+        for category, terms in search_dict.items():
+            url_search_string = combine_search_strings(url_search_string, convert_to_search_string( dict(terms=terms, category=category)))
+        if url_search_string != '' and '&searchTerm=&' not in url_search_string:
+            search_results = encode_search_url( dict(url='/search/{}'.format(url_search_string), searchtype='full', returntype='full'))
+    return search_results
 
 def encode_search_url( args ):
     """ Searches ENCODE by a URL suffix.
     https://www.encodeproject.org/<URL_SUFFIX>
 
     url: url suffix to search
-    searchtype: 'full' (full search), 'experiment' (search within an experiment),...
+    searchtype: 'full' (full search), 'experiment' (search within an experiment), 'file' (search within a file)
     returntype: 'full' (default), 'raw', 'file', 'experiment', 'celltype', 'assay', 'platform',...
     ---
     results:
@@ -84,7 +91,14 @@ def encode_search_url( args ):
     """
     returntype = args['returntype'] if 'returntype' in args else 'full'
     searchtype = args['searchtype'] if 'searchtype' in args else 'full'
-    search_url = 'https://www.encodeproject.org/{}&limit=50000'.format(str(args['url']).lstrip('/'))
+    if 'url' not in args:
+        print('ERROR: You need to specify a URL.')
+        return {}
+    elif str(args['url']).lstrip('/').startswith('search'):
+        search_url = 'https://www.encodeproject.org/{}&limit=50000'.format(str(args['url']).lstrip('/'))
+    else:
+        search_url = 'https://www.encodeproject.org/{}'.format(str(args['url']).lstrip('/'))
+
     print('GET request: {}'.format(search_url))
     results_raw = quick_utils.get_request( dict(url=search_url, type='application/json'))
     if returntype.lower() == 'raw':
@@ -196,18 +210,81 @@ def get_files_from_encode_json( args ):
     ---
     relevant_files: list of S3 file URIs
 
+    [TODO] for 'file' searchtype, can get HTTPS object link via 'cloud_metadata' key.
+
     """
     results = args['results']
     searchtype = args['searchtype'] if 'searchtype' in args else ''
     cloud = args['cloud'] if 'cloud' in args else 's3'
 
     relevant_files = []
-    if searchtype=='experiment':
+    if searchtype in ['experiment']:
         # original search was an experiment
         for f in results["files"]:
             if cloud in ['s3','aws','amazon']:
                 relevant_files.append(f["s3_uri"])
+    elif searchtype in ['file']:
+        relevant_files.append(results["s3_uri"])
     return relevant_files
+
+def download_encode( args ):
+    """ Entrypoint for an ENCODE download.
+    Assumes that search_encode() has already been run, so that a search_encode.txt file exists.
+    User can refine search.
+    downloadstr: download string passed in, which can include the following:
+
+    --input <file name>
+    --output <output directory>
+    --filetype <refine by file type(s) - space delimited>
+    --assay <refine by assay>
+    --species <refine by species>
+    --experiment <refine by experiment ID>
+    --celltype <refine by cell type>
+
+    [NOTE] Current format for search_encode.txt is:
+    index	experiment	assay	celltype	species	accession	file
+    0	/experiments/ENCSR718YPN/	single-nucleus ATAC-seq	heart left ventricle	Homo sapiens	[]	['/files/ENCFF804ONU/', '/files/ENCFF393IGF/',...]
+
+    [NOTE] Use str.contains:  df2 = df.loc[df['celltype'].str.contains('heart', case=False)]
+    [TODO] s3 file transfer function in aws_s3_utils
+    """
+    dd = atlas_utils.parse_search_terms( args['downloadstr'] if 'downloadstr' in args else '')
+    infile = dd['input'] if 'input' in dd else 'search_encode.txt'
+    outdir = dd['output'] if 'output' in dd else str(os.getcwd())
+    filetype = dd['filetype'] if 'filetype' in dd else ''
+    assay = dd['filetype'] if 'filetype' in dd else ''
+    species = dd['species'] if 'species' in dd else ''
+    experiment = dd['experiment'] if 'experiment' in dd else ''
+    celltype = dd['celltype'] if 'celltype' in dd else ''
+    outfiles = []
+
+    if os.path.exists(infile):
+        df = pd.read_csv(infile, sep='\t')
+        if assay != '':
+            df = df.loc[df['assay'].str.lower().contains(assay, case=False)]
+        if species != '':
+            df = df.loc[df['species'].str.lower().contains(species, case=False)]
+        if experiment != '':
+            df = df.loc[df['experiment'].str.lower().contains(experiment, case=False)]
+        if celltype != '':
+            df = df.loc[df['celltype'].str.lower().contains(celltype, case=False)]
+
+        experiment_urls = list(df['experiment'])
+        for e_url in experiment_urls:
+            outfiles += encode_search_url( dict(url=e_url, searchtype='experiment', returntype='file'))
+
+        if filetype!='':
+            ftypes = filetype.split(' ')
+            for ftype in ftypes:
+                outfiles = list(filter(lambda f: ftype in f, outfiles))
+
+    if outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
+        # s3 file transfer
+        downloaded_files = aws_s3_utils.transfer_file_s3( dict(path=outfiles, outpath=outdir))
+    else:
+        downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir))
+    return downloaded_files
+
 
 ########################## HELPER FUNCTIONS ############################
 
@@ -218,6 +295,36 @@ def print_dataframe( df ):
     pd.set_option('display.max_colwidth', 50)
     pd.set_option('display.precision', 2)
     print(df)
+    return
+
+def print_encode_help():
+    """ Prints the command-line help menu when a user types a wrong input or
+    when a user just types "bioshed search encode".
+    """
+    print('Welcome to ENCODE dataset search and download, powered by BioShed Atlas.')
+    print('')
+    print('Usage: bioshed search encode <SEARCH>\n')
+    print('Examples:\n')
+    print('\t$ bioshed search encode breast cancer rna-seq')
+    print('\t$ bioshed search encode --tissue heart --assay chip-seq')
+    print('')
+    print('--tissue and --assay are examples of search categories used to speed up searches.\n')
+    print('Valid search categories are:')
+    print('--tissue / --assay / --assaytarget / --celltype / --disease / --genome / --filetype / --platform / --species')
+    print('')
+    print('To see a list of valid search terms for a category, you can just type, for example:\n')
+    print('\t$ bioshed search encode --filetype')
+    print('')
+    print('Once you have performed a search, bioshed will write dataset results to search_encode.txt in the current directory.')
+    print('To then download those dataset files, you can then run: \n')
+    print('\t$ bioshed download encode')
+    print('')
+    print('Further refine the files you want by typing, for example\n')
+    print('\t$ bioshed download encode --filetype fastq')
+    print('')
+    print('You can specify a different output directory, including an AWS S3 remote folder:\n')
+    print('\t$ bioshed download encode --output s3://my/output/folder')
+    print('')
     return
 
 def convert_to_search_string( args ):
@@ -237,15 +344,26 @@ def convert_to_search_string( args ):
     pre_search_file = 'files/search_encode_{}.txt'.format(str(category).lower())
     search_string = ''
 
-    if os.path.exists(pre_search_file):
-        df = pd.read_csv(pre_search_file, sep='\t')
-        if 'link' in df.columns and 'ID' in df.columns:
-            pd_query = df[df['ID']==terms]['link'] # df.query('ID=={}'.format(terms))['link']
-            if len(pd_query) > 0:
-                search_string = pd_query.values[0]
-    if search_string == '':
-        search_string = '?type=Experiment&searchTerm={}'.format(terms.lower().replace(' ','+'))
-    return search_string
+    try:
+        if os.path.exists(pre_search_file):
+            df = pd.read_csv(pre_search_file, sep='\t')
+            if category != '' and terms == '':
+                # if category list is asked for:
+                print('You need to provide a search term for category --{}. Valid search terms are: {}\n'.format(category, list(df['ID'])))
+            elif 'link' in df.columns and 'ID' in df.columns:
+                pd_query = df[df['ID']==terms]['link'] # df.query('ID=={}'.format(terms))['link']
+                if len(pd_query) > 0:
+                    search_string = pd_query.values[0]
+        elif not os.path.exists(pre_search_file) and category not in ['general', ''] and terms == '':
+            # incorrect category used
+            raise ValueError('ERROR: Invalid search category {}. Type "bioshed search encode" to see valid search categories, or just search without categories.'.format(category))
+
+        if search_string == '':
+            search_string = '?type=Experiment&searchTerm={}'.format(terms.lower().replace(' ','+'))
+        return search_string
+    except ValueError as e:
+        print(e)
+        return ''
 
 def combine_search_strings( ss1, ss2 ):
     """ Combine two search strings into a single ENCODE search string.

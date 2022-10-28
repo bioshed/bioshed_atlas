@@ -1,65 +1,66 @@
-TF ChIP-seq	4969
-Histone ChIP-seq	3999
-Control ChIP-seq	2904
-DNase-seq	1865
-total RNA-seq	1170
-Mint-ChIP-seq	987
-polyA plus RNA-seq	912
-shRNA RNA-seq	668
-ATAC-seq	555
-scRNA-seq	507
-microRNA-seq	418
-CRISPR RNA-seq	415
-snATAC-seq	353
-RNA microarray	291
-WGBS	278
-DNAme array	257
-Control eCLIP	253
-eCLIP	246
-RRBS	218
-RNA Bind-n-Seq	216
-small RNA-seq	216
-ChIA-PET	209
-long read RNA-seq	197
-Control Mint-ChIP-seq	175
-RAMPAGE	168
-genotyping array	142
-CAGE	121
-Repli-seq	119
-microRNA counts	115
-siRNA RNA-seq	113
-in situ Hi-C	104
-CRISPRi RNA-seq	77
-RIP-seq	73
-MRE-seq	68
-Repli-chip	63
-MeDIP-seq	55
-PAS-seq	54
-WGS	52
-Bru-seq	49
-GM DNase-seq	46
-FAIRE-seq	37
-BruChase-seq	32
-RIP-chip	32
-polyA minus RNA-seq	32
-RNA-PET	31
-PRO-cap	25
-PRO-seq	22
-BruUV-seq	16
-MS-MS	14
-5C	13
-TAB-seq	8
-iCLIP	7
-DNA-PET	6
-icSHAPE	6
-GRO-cap	4
-SPRITE	3
-long read scRNA-seq	3
-5' RLM RACE	2
-MNase-seq	2
-Switchgear	2
-icLASER	2
-Circulome-seq	1
+ID	number_of_datasets	link
+TF ChIP-seq	4969	?type=Experiment&assay_title=TF%20ChIP-seq
+Histone ChIP-seq	3999	?type=Experiment&assay_title=Histone%20ChIP-seq
+Control ChIP-seq	2904	?type=Experiment&assay_title=Control%20ChIP-seq
+DNase-seq	1865	?type=Experiment&assay_title=DNase-seq
+total RNA-seq	1170	?type=Experiment&assay_title=total%20RNA-seq
+Mint-ChIP-seq	987	?type=Experiment&assay_title=Mint-ChIP-seq
+polyA plus RNA-seq	912	?type=Experiment&assay_title=polyA%20plus%20RNA-seq
+shRNA RNA-seq	668	?type=Experiment&assay_title=shRNA%20RNA-seq
+ATAC-seq	555	?type=Experiment&assay_title=ATAC-seq
+scRNA-seq	507	?type=Experiment&assay_title=scRNA-seq
+microRNA-seq	418	?type=Experiment&assay_title=microRNA-seq
+CRISPR RNA-seq	415	?type=Experiment&assay_title=CRISPR%20RNA-seq
+snATAC-seq	353	?type=Experiment&assay_title=snATAC-seq
+RNA microarray	291	?type=Experiment&assay_title=RNA%20microarray
+WGBS	278	?type=Experiment&assay_title=WGBS
+DNAme array	257	?type=Experiment&assay_title=DNAme%20array
+Control eCLIP	253	?type=Experiment&assay_title=Control%20eCLIP
+eCLIP	246	?type=Experiment&assay_title=eCLIP
+RRBS	218	?type=Experiment&assay_title=RRBS
+RNA Bind-n-Seq	216	?type=Experiment&assay_title=RNA%20Bind-n-Seq
+small RNA-seq	216	?type=Experiment&assay_title=small%20RNA-seq
+ChIA-PET	209	?type=Experiment&assay_title=ChIA-PET
+long read RNA-seq	197	?type=Experiment&assay_title=long%20read%20RNA-seq
+Control Mint-ChIP-seq	175	?type=Experiment&assay_title=Control%20Mint-ChIP-seq
+RAMPAGE	168	?type=Experiment&assay_title=RAMPAGE
+genotyping array	142	?type=Experiment&assay_title=genotyping%20array
+CAGE	121	?type=Experiment&assay_title=CAGE
+Repli-seq	119	?type=Experiment&assay_title=Repli-seq
+microRNA counts	115	?type=Experiment&assay_title=microRNA%20counts
+siRNA RNA-seq	113	?type=Experiment&assay_title=siRNA%20RNA-seq
+in situ Hi-C	104	?type=Experiment&assay_title=in%20situ%20Hi-C
+CRISPRi RNA-seq	77	?type=Experiment&assay_title=CRISPRi%20RNA-seq
+RIP-seq	73	?type=Experiment&assay_title=RIP-seq
+MRE-seq	68	?type=Experiment&assay_title=MRE-seq
+Repli-chip	63	?type=Experiment&assay_title=Repli-chip
+MeDIP-seq	55	?type=Experiment&assay_title=MeDIP-seq
+PAS-seq	54	?type=Experiment&assay_title=PAS-seq
+WGS	52	?type=Experiment&assay_title=WGS
+Bru-seq	49	?type=Experiment&assay_title=Bru-seq
+GM DNase-seq	46	?type=Experiment&assay_title=GM%20DNase-seq
+FAIRE-seq	37	?type=Experiment&assay_title=FAIRE-seq
+BruChase-seq	32	?type=Experiment&assay_title=BruChase-seq
+RIP-chip	32	?type=Experiment&assay_title=RIP-chip
+polyA minus RNA-seq	32	?type=Experiment&assay_title=polyA%20minus%20RNA-seq
+RNA-PET	31	?type=Experiment&assay_title=RNA-PET
+PRO-cap	25	?type=Experiment&assay_title=PRO-cap
+PRO-seq	22	?type=Experiment&assay_title=PRO-seq
+BruUV-seq	16	?type=Experiment&assay_title=BruUV-seq
+MS-MS	14	?type=Experiment&assay_title=MS-MS
+5C	13	?type=Experiment&assay_title=5C
+TAB-seq	8	?type=Experiment&assay_title=TAB-seq
+iCLIP	7	?type=Experiment&assay_title=iCLIP
+DNA-PET	6	?type=Experiment&assay_title=DNA-PET
+icSHAPE	6	?type=Experiment&assay_title=icSHAPE
+GRO-cap	4	?type=Experiment&assay_title=GRO-cap
+SPRITE	3	?type=Experiment&assay_title=SPRITE
+long read scRNA-seq	3	?type=Experiment&assay_title=long%20read%20scRNA-seq
+5' RLM RACE	2	?type=Experiment&assay_title=5'%20RLM%20RACE
+MNase-seq	2	?type=Experiment&assay_title=MNase-seq
+Switchgear	2	?type=Experiment&assay_title=Switchgear
+icLASER	2	?type=Experiment&assay_title=icLASER
+Circulome-seq	1	?type=Experiment&assay_title=Circulome-seq
 histone	5001	?type=Experiment&target.investigated_as=histone
 transcription factor	4297	?type=Experiment&target.investigated_as=transcription%20factor
 broad histone mark	2872	?type=Experiment&target.investigated_as=broad%20histone%20mark

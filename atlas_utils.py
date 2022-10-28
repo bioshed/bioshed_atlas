@@ -3,6 +3,12 @@ def parse_search_terms( search_string ):
 
     Example: "breast cancer --assay rna-seq" => {"general": "breast cancer", "assay": "rna-seq"}
 
+    >>> parse_search_terms('breast cancer --assay rna-seq')
+    {'general': 'breast cancer', 'assay': 'rna-seq'}
+    >>> parse_search_terms('--tissue heart --assay chip-seq')
+    {'tissue': 'heart', 'assay': 'chip-seq'}
+    >>> parse_search_terms('--filetype')
+    {'filetype': ''}
     """
     search_dict = {}
     category = 'general'
@@ -15,6 +21,7 @@ def parse_search_terms( search_string ):
             search_dict[category] += s+' '
         else:
             category = s[2:]
+            search_dict[category] = ''
         search_list = search_list[1:]
     for k,v in search_dict.items():
         search_dict[k] = v.strip()
