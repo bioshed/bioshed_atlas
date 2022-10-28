@@ -233,6 +233,7 @@ def download_encode( args ):
     User can refine search.
     downloadstr: download string passed in, which can include the following:
 
+    --help (help menu)
     --input <file name>
     --output <output directory>
     --filetype <refine by file type(s) - space delimited>
@@ -257,8 +258,11 @@ def download_encode( args ):
     experiment = dd['experiment'] if 'experiment' in dd else ''
     celltype = dd['celltype'] if 'celltype' in dd else ''
     outfiles = []
+    downloaded_files = []
 
-    if os.path.exists(infile):
+    if 'help' in dd:
+        print_encode_help()
+    elif os.path.exists(infile):
         df = pd.read_csv(infile, sep='\t')
         if assay != '':
             df = df.loc[df['assay'].str.lower().contains(assay, case=False)]
@@ -278,11 +282,13 @@ def download_encode( args ):
             for ftype in ftypes:
                 outfiles = list(filter(lambda f: ftype in f, outfiles))
 
-    if outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
-        # s3 file transfer
-        downloaded_files = aws_s3_utils.transfer_file_s3( dict(path=outfiles, outpath=outdir))
+        if outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
+            # s3 file transfer
+            downloaded_files = aws_s3_utils.transfer_file_s3( dict(path=outfiles, outpath=outdir))
+        else:
+            downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir))
     else:
-        downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir))
+        print('File {} does not exist. Please first run "bioshed search encode"'.format(infile))
     return downloaded_files
 
 
