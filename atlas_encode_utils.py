@@ -234,6 +234,7 @@ def download_encode( args ):
     downloadstr: download string passed in, which can include the following:
 
     --help (help menu)
+    --list : list files, but do not download (like a dryrun)
     --input <file name>
     --output <output directory>
     --filetype <refine by file type(s) - space delimited>
@@ -249,6 +250,7 @@ def download_encode( args ):
     [NOTE] Use str.contains:  df2 = df.loc[df['celltype'].str.contains('heart', case=False)]
     [DONE] s3 file transfer function in aws_s3_utils
     """
+    INFO_COLUMNS = ['experiment', 'assay', 'celltype', 'species']
     dd = atlas_utils.parse_search_terms( args['downloadstr'] if 'downloadstr' in args else '')
     infile = dd['input'] if 'input' in dd else 'search_encode.txt'
     outdir = dd['output'] if 'output' in dd else str(os.getcwd())
@@ -257,7 +259,9 @@ def download_encode( args ):
     species = dd['species'] if 'species' in dd else ''
     experiment = dd['experiment'] if 'experiment' in dd else ''
     celltype = dd['celltype'] if 'celltype' in dd else ''
+    listonly = 'True' if 'list' in dd else ''
     outfiles = []
+    outfiles_info = {}
     downloaded_files = []
 
     if 'help' in dd:
@@ -275,18 +279,33 @@ def download_encode( args ):
 
         experiment_urls = list(df['experiment'])
         for e_url in experiment_urls:
-            outfiles += encode_search_url( dict(url=e_url, searchtype='experiment', returntype='file'))
+            # get paths of all files for each experiment
+            outfiles_new = encode_search_url( dict(url=e_url, searchtype='experiment', returntype='file'))
+            outfiles += outfiles_new
+            for outfile in outfiles_new:
+                outfiles_info[outfile] = '; '.join(list(map(str, df.loc[df['experiment']==e_url][INFO_COLUMNS].values.flatten().tolist())))
 
         if filetype!='':
+            # if --filetype filter is specified
             ftypes = filetype.split(' ')
             for ftype in ftypes:
                 outfiles = list(filter(lambda f: ftype in f, outfiles))
+                removed_files = list(filter(lambda f: ftype not in f, outfiles))
+                for removed_file in removed_files:
+                    removed_info = outfiles_info.pop(removed_file, 'not found')
 
-        if outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
-            # s3 file transfer
-            downloaded_files = aws_s3_utils.transfer_file_s3( dict(path=outfiles, outpath=outdir))
+        if listonly == 'True':
+            # list files, but do not download
+            print('FILE\tINFO (EXPT; ASSAY; CELLTYPE; SPECIES)')
+            for outfile, outfile_info in outfiles_info.items():
+                print('{}\t{}'.format(quick_utils.get_file_only(outfile), str(outfile_info)))
         else:
-            downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir))
+            # download files
+            if outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
+                # s3 file transfer
+                downloaded_files = aws_s3_utils.transfer_file_s3( dict(path=outfiles, outpath=outdir))
+            else:
+                downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir))
     else:
         print('File {} does not exist. Please first run "bioshed search encode"'.format(infile))
     return downloaded_files
@@ -325,8 +344,11 @@ def print_encode_help():
     print('To then download those dataset files, you can then run: \n')
     print('\t$ bioshed download encode')
     print('')
-    print('Further refine the files you want by typing, for example\n')
+    print('Further refine the files you want using any of the search categories. For example\n')
     print('\t$ bioshed download encode --filetype fastq')
+    print('')
+    print('You can list the files before downloading them, by typing:\n')
+    print('\t$ bioshed download encode --list')
     print('')
     print('You can specify a different output directory, including an AWS S3 remote folder:\n')
     print('\t$ bioshed download encode --output s3://my/output/folder')
