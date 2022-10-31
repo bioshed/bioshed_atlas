@@ -239,6 +239,7 @@ def download_encode( args ):
 
     --help (help menu)
     --list : list files, but do not download (like a dryrun)
+    --update : update only - do not overwrite existing files
     --input <file name>
     --output <output directory>
     --filetype <refine by file type(s) - space delimited>
@@ -264,6 +265,7 @@ def download_encode( args ):
     experiment = dd['experiment'] if 'experiment' in dd else ''
     celltype = dd['celltype'] if 'celltype' in dd else ''
     listonly = 'True' if 'list' in dd else ''
+    updateonly = 'True' if 'update' in dd else ''
     outfiles = []
     outfiles_info = {}
     downloaded_files = []
@@ -307,9 +309,9 @@ def download_encode( args ):
             # download files
             if outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
                 # s3 file transfer
-                downloaded_files = aws_s3_utils.transfer_file_s3( dict(path=outfiles, outpath=outdir))
+                downloaded_files = aws_s3_utils.transfer_file_s3( dict(path=outfiles, outpath=outdir, overwrite='False' if updateonly=='True' else 'True'))
             else:
-                downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir))
+                downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir, overwrite='False' if updateonly=='True' else 'True'))
     else:
         print('File {} does not exist. Please first run "bioshed search encode"'.format(infile))
     return downloaded_files
