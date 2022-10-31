@@ -359,6 +359,8 @@ def print_encode_help():
     print('You can specify a different output directory, including an AWS S3 remote folder:\n')
     print('\t$ bioshed download encode --output s3://my/output/folder')
     print('')
+    print('By default, existing files in the output directory will be overwritten. To download only new files:\n')
+    print('\t$ bioshed download encode --update')
     return
 
 def convert_to_search_string( args ):
