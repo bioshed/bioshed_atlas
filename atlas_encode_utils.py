@@ -1,5 +1,7 @@
 import sys, os, json
 import pandas as pd
+SCRIPT_DIR = str(os.path.dirname(os.path.realpath(__file__)))
+sys.path.append(os.path.join(SCRIPT_DIR))
 import atlas_utils
 sys.path.append('bioshed_utils/')
 import quick_utils
