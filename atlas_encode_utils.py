@@ -269,6 +269,7 @@ def download_encode( args ):
     outfiles = []
     outfiles_info = {}
     downloaded_files = []
+    eids = []
 
     if 'help' in dd:
         print_encode_help()
@@ -279,21 +280,24 @@ def download_encode( args ):
         if species != '':
             df = df.loc[df['species'].str.lower().contains(species, case=False)]
         if experiment != '':
-            df = df.loc[df['experiment'].str.lower().contains(experiment, case=False)]
+            # if --experiment filter is specified
+            eids = list(map(lambda e: '/experiments/{}/'.format(e), quick_utils.format_type(experiment, 'list'))
+            # df = df.loc[df['experiment'].str.lower().contains(experiment, case=False)]
         if celltype != '':
             df = df.loc[df['celltype'].str.lower().contains(celltype, case=False)]
 
         experiment_urls = list(df['experiment'])
         for e_url in experiment_urls:
-            # get paths of all files for each experiment
-            outfiles_new = encode_search_url( dict(url=e_url, searchtype='experiment', returntype='file'))
-            outfiles += outfiles_new
-            for outfile in outfiles_new:
-                outfiles_info[outfile] = '; '.join(list(map(str, df.loc[df['experiment']==e_url][INFO_COLUMNS].values.flatten().tolist())))
+            if len(eids)>0 and e_url in eids:
+                # get paths of all files for each experiment
+                outfiles_new = encode_search_url( dict(url=e_url, searchtype='experiment', returntype='file'))
+                outfiles += outfiles_new
+                for outfile in outfiles_new:
+                    outfiles_info[outfile] = '; '.join(list(map(str, df.loc[df['experiment']==e_url][INFO_COLUMNS].values.flatten().tolist())))
 
         if filetype!='':
             # if --filetype filter is specified
-            ftypes = filetype.split(' ')
+            ftypes = quick_utils.format_type(filetype, 'list')
             for ftype in ftypes:
                 outfiles = list(filter(lambda f: ftype in f, outfiles))
                 removed_files = list(filter(lambda f: ftype not in f, outfiles))
@@ -352,6 +356,7 @@ def print_encode_help():
     print('')
     print('Further refine the files you want using any of the search categories. For example\n')
     print('\t$ bioshed download encode --filetype fastq')
+    print('\t$ bioshed download encode --experiment ENCSR597YMV ENCSR562QQA ENCSR568FZM')
     print('')
     print('You can list the files before downloading them, by typing:\n')
     print('\t$ bioshed download encode --list')
