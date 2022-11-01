@@ -281,7 +281,7 @@ def download_encode( args ):
             df = df.loc[df['species'].str.lower().contains(species, case=False)]
         if experiment != '':
             # if --experiment filter is specified
-            eids = list(map(lambda e: '/experiments/{}/'.format(e), quick_utils.format_type(experiment, 'list'))
+            eids = list(map(lambda e: '/experiments/{}/'.format(e), quick_utils.format_type(experiment, 'list')))
             # df = df.loc[df['experiment'].str.lower().contains(experiment, case=False)]
         if celltype != '':
             df = df.loc[df['celltype'].str.lower().contains(celltype, case=False)]
