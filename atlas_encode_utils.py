@@ -288,7 +288,7 @@ def download_encode( args ):
 
         experiment_urls = list(df['experiment'])
         for e_url in experiment_urls:
-            if len(eids)>0 and e_url in eids:
+            if len(eids)==0 or (len(eids)>0 and e_url in eids):
                 # get paths of all files for each experiment
                 outfiles_new = encode_search_url( dict(url=e_url, searchtype='experiment', returntype='file'))
                 outfiles += outfiles_new
