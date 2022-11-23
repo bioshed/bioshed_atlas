@@ -5,6 +5,43 @@ import atlas_utils
 sys.path.append('bioshed_utils/')
 import quick_utils
 
+def combine_all( base_dir ):
+    """ Combines all manifest files into one.
+    """
+    DIRS = ['assay', 'disease', 'filetype', 'platform', 'tissue', 'project']
+    COLS = ['filename', 'md5', 'project', 'assay','tissue','disease','species','platform','filetype']
+    manifest_all = {}
+    for DIR in DIRS:
+        files_all = os.listdir(os.path.join(base_dir, DIR))
+        manifest_files = list(filter(lambda x: x.endswith('.txt'), files_all))
+        for mfile in manifest_files:
+            category = DIR
+            value = mfile.split('.')[-2]
+            with open(os.path.join(base_dir, DIR,mfile),'r') as f:
+                for r in f:
+                    # print(r)
+                    rt = r.strip().split('\t')
+                    if rt[0] != 'id':
+                        _id = rt[0]
+                        _fn = rt[1]
+                        _md5 = rt[2]
+                        if _id not in manifest_all:
+                            manifest_all[_id] = {}
+                            manifest_all[_id]['filename'] = _fn
+                            manifest_all[_id]['md5'] = _md5
+                            manifest_all[_id]['species'] = 'human'
+                            manifest_all[_id]['project'] = 'other'
+                        manifest_all[_id][category] = value
+    # print(str(manifest_all))
+    with open('manifest-all-gdc.txt', 'w') as fout:
+        fout.write('id\tfilename\tmd5\tproject\tassay\ttissue\tdisease\tspecies\tplatform\tfiletype\n')
+        for mid in list(manifest_all.keys()):
+            row = mid+'\t'
+            for COL in COLS:
+                row += manifest_all[mid][COL]+'\t' if COL in manifest_all[mid] else '.\t'
+            fout.write(row.rstrip(' \t')+'\n')
+    return 'manifest-all-gdc.txt'
+
 def gdc_run_all( manifest_list_file ):
     """ Runs gdc_manifest_full() for all files
     """
