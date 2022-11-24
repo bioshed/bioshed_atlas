@@ -247,6 +247,9 @@ def download_encode( args ):
     --species <refine by species>
     --experiment <refine by experiment ID>
     --celltype <refine by cell type>
+    --index <refine by index>
+
+    [TODO] Clean up documentation and write tests
 
     [NOTE] Current format for search_encode.txt is:
     index	experiment	assay	celltype	species	accession	file
@@ -264,6 +267,7 @@ def download_encode( args ):
     species = dd['species'] if 'species' in dd else ''
     experiment = dd['experiment'] if 'experiment' in dd else ''
     celltype = dd['celltype'] if 'celltype' in dd else ''
+    index = dd['index'] if 'index' in dd else ''
     listonly = 'True' if 'list' in dd else ''
     updateonly = 'True' if 'update' in dd else ''
     outfiles = []
@@ -276,15 +280,17 @@ def download_encode( args ):
     elif os.path.exists(infile):
         df = pd.read_csv(infile, sep='\t')
         if assay != '':
-            df = df.loc[df['assay'].str.lower().contains(assay, case=False)]
+            df = df.loc[df['assay'].str.contains(assay, case=False)]
         if species != '':
-            df = df.loc[df['species'].str.lower().contains(species, case=False)]
+            df = df.loc[df['species'].str.contains(species, case=False)]
         if experiment != '':
             # if --experiment filter is specified
             eids = list(map(lambda e: '/experiments/{}/'.format(e), quick_utils.format_type(experiment, 'list')))
             # df = df.loc[df['experiment'].str.lower().contains(experiment, case=False)]
         if celltype != '':
             df = df.loc[df['celltype'].str.lower().contains(celltype, case=False)]
+        if index != '':
+            df = df.loc[df['index'].str.lower().contains(index, case=False)]
 
         experiment_urls = list(df['experiment'])
         for e_url in experiment_urls:

@@ -27,3 +27,21 @@ def parse_search_terms( search_string ):
         search_dict[k] = v.strip()
 
     return search_dict
+
+def add_term( search_dict, search_key, term_to_add ):
+    """ Adds a term to an existing search dict.
+
+    search_dict: e.g., {"general": "breast cancer", "assay": "rna-seq"}
+    search_key: e.g., "assay"
+    term_to_add: e.g., "chip-seq"
+    ---
+    search_dict (updated)
+
+    """
+    if search_key not in search_dict:
+        search_dict[search_key] = ""
+    existing_terms = search_dict[search_key]
+    new_terms = existing_terms.strip() + " {}".format(str(term_to_add))
+    search_dict[search_key] = new_terms
+    return search_dict
+    

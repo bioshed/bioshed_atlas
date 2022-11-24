@@ -1,25 +1,253 @@
 import os, sys, json
+import pandas as pd
+import gzip
 SCRIPT_DIR = str(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(os.path.join(SCRIPT_DIR))
 import atlas_utils
 sys.path.append('bioshed_utils/')
 import quick_utils
+import aws_s3_utils
+
+GENERIC_TERMS = ["cancer", "tumor", "tumour", "dataset"]
+DEFAULT_SEARCH_FILE = "search_gdc.txt"
+
+def search_gdc( args ):
+    """ Entrypoint for a TCGA or GDC search.
+    In general, we recommend using GDC, as this repository includes TCGA and several other consortiums.
+
+    $ bioshed search tcga <searchterms>
+    -OR-
+    $ bioshed search gdc <searchterms>
+
+    Examples
+    $ bioshed search gdc breast cancer variants
+    $ bioshed search gdc --tissue heart --assay rna-seq
+
+    searchterms: search terms input by user
+    ---
+    search_results: data frame of results
+
+    >>> search_gdc( dict(searchterms='breast cancer variants'))
+    ''
+    >>> search_gdc( dict(searchterms='--tissue heart --assay rna-seq'))
+    ''
+    >>> search_gdc( dict(searchterms='--assay single cell --tissue brain'))
+    ''
+
+    Prints number of experiment datasets found and where results are output to (search_gdc.txt).
+    Outputs search results to search_gdc.txt (tab-delimited text)
+    This search results file is fed into download relevant files with the following command:
+
+    $ bioshed download gdc
+    -OR-
+    $ bioshed download tcga
+
+    You can further filter search_gdc.txt before download by adding search terms:
+
+    $ bioshed download gdc --filetype txt
+
+    By default, this will download to the current folder. You can specify a relative path to download or a remote cloud bucket to download to with the --output parameter.
+
+    $ bioshed download gdc --output <local_outdir>
+    $ bioshed download gdc --output s3://my/s3/folder
+
+    NOTE: You MUST have a bioshed_gdc.txt file before you run bioshed download.
+
+    You can also specify a bioshed-formatted GDC results file to download files:
+
+    $ bioshed download gdc newsearch_results.txt
+
+    For help with anything, type:
+    $ bioshed search gdc --help
+    $ bioshed download gdc --help
+    """
+    MANIFEST_FILE = "files/gdc/manifest-all-gdc.txt.gz"
+    CATEGORIES_FILE = 'files/gdc/categories-all-gdc.txt'
+    search_results = {}
+    # dictionary of search terms: {"general": "...", "tissue": "...", "celltype": "..."...}
+    search_dict = atlas_utils.parse_search_terms( args['searchterms'] ) if ('searchterms' in args and args['searchterms'] != '') else {}
+    if search_dict == {} or 'help' in search_dict:
+        print_gdc_help()
+    else:
+        search_dict = convert_general_terms( search_dict, CATEGORIES_FILE )
+        search_results = get_manifest_rows( search_dict, MANIFEST_FILE )
+    return search_results
+
+
+def convert_general_terms( search_dict, CATEGORIES_FILE ):
+    """ Converts general search terms to specific categories.
+
+    search_dict: search dictionary
+    CATEGORIES_FILE: tab-delimited file with category in 1st column and possible search terms in 2nd column
+    ---
+    search_dict: updated search dict
+
+    Example:
+    {"general": "breast cancer rna-seq"} => {"tissue": "breast", "assay": "rna-seq"}
+    """
+    categories = {}
+    if "general" in search_dict:
+        with open(CATEGORIES_FILE,'r') as f:
+            for r in f:
+                rt = r.strip().split('\t')
+                category = rt[0]
+                terms = rt[1]
+                categories[category] = terms
+
+        general_terms = search_dict["general"]
+        # just use simple word-based search for now
+        general_terms_split = quick_utils.format_type(general_terms, 'list')
+        for gterm in general_terms_split:
+            for k, v in categories.items():
+                if quick_utils.quick_format(gterm) in v and gterm not in GENERIC_TERMS:
+                    search_dict = atlas_utils.add_term(search_dict, k, gterm)
+    return search_dict
+
+
+def get_manifest_rows( search_dict, MANIFEST_FILE ):
+    """
+    Gets rows from GDC-formatted manifest file that match search terms.
+    Valid search terms are:
+    --tissue / --assay / --celltype / --disease / --filetype / --platform / --species
+
+    search_dict: dictionary of search terms: {"general": "...", "tissue": "...", "assay": "..."}
+    ---
+    results: data frame of results
+    (out): filtered GDC-format manifest file
+    """
+
+    df = pd.read_csv(MANIFEST_FILE, compression='gzip', sep='\t')
+    columns = list(df.columns)
+    # look for each search term within the corresp category column in the manifest data frame
+    for k, v in search_dict.items():
+        if k == 'celltype' or (k == 'disease' and ('tumor' in v or 'tumour' in v or 'cancer' in v)):
+            k = 'tissue'
+        if k in columns:
+            terms = quick_utils.format_type(v, 'list')
+            for t in terms:
+                t = quick_utils.quick_format(t)
+                if t not in GENERIC_TERMS:
+                    df = df.loc[df[k].str.contains(t, case=False)]
+    # write filtered data frame to output file for download
+    df.index.name = 'index'
+    df.to_csv(DEFAULT_SEARCH_FILE, sep='\t')
+    return df
+
+def download_gdc( args ):
+    """ Entrypoint for an GDC download.
+    Assumes that search_gdc() has already been run, so that a search_gdc.txt file exists.
+    User can refine search.
+
+    downloadstr: download string passed in, which can include the following:
+
+    --help (help menu)
+    --list : list files, but do not download (like a dryrun)
+    --update : update only - do not overwrite existing files
+    --input <file name>
+    --output <output directory>
+    --filetype <refine by file type(s) - space delimited>
+    --assay <refine by assay>
+    --id <refine by ID>
+    --index <refine by index>
+    --tissue <refine by tissue of origin>
+
+    Multiple ids or indexes can be specified by either comma or space delimiting:
+    --id 34005 34006
+    --id 34005,34006
+
+    [TODO] Clean up documentation and write tests
+
+    [NOTE] Current format for search_gdc.txt is:
+    id      filename        md5     project assay   tissue  disease species platform        filetype
+    6fd3fe64-23ba-4db3-8315-1867bdec277d    b7274dab-7650-4de3-91a1-7accf806e870.mirbase21.isoforms.quantification.txt      a773004e175527ad668a8db92f0c4e80        tcga    transcriptome-mirna-seq-small-rnaseq    heart   .       human   .       filetype-txt
+    [NOTE] '|'.join learned from:
+    https://stackoverflow.com/questions/26577516/how-to-test-if-a-string-contains-one-of-the-substrings-in-a-list-in-pandas
+    """
+    BASE_S3_DIR = "s3://tcga-2-open/"
+    INFO_COLUMNS = ['id', 'assay', 'tissue']
+    dd = atlas_utils.parse_search_terms( args['downloadstr'] if 'downloadstr' in args else '')
+    infile = dd['input'] if 'input' in dd else DEFAULT_SEARCH_FILE
+    outdir = dd['output'] if 'output' in dd else str(os.getcwd())
+    filetype = dd['filetype'] if 'filetype' in dd else ''
+    assay = dd['assay'] if 'assay' in dd else ''
+    _id = dd['id'] if 'id' in dd else ''
+    tissue = dd['tissue'] if 'tissue' in dd else ''
+    index = dd['index'] if 'index' in dd else ''
+    filename = dd['filename'] if 'filename' in dd else ''
+    listonly = 'True' if 'list' in dd else ''
+    updateonly = 'True' if 'update' in dd else ''
+    outfiles = []
+    downloaded_files = []
+
+    if 'help' in dd:
+        print_gdc_help()
+    elif os.path.exists(infile):
+        df = pd.read_csv(infile, sep='\t')
+        print(df)
+        if assay != '':
+            df = df.loc[df['assay'].str.contains(assay, case=False)]
+        if _id != '':
+            _id = quick_utils.format_type(_id, 'list')
+            df = df.loc[df['id'].str.contains('|'.join(_id), case=False)]
+        if index != '':
+            index = quick_utils.format_type(index, 'list')
+            df = df.loc[df['index'].astype(str).str.contains('|'.join(index))]
+        if tissue != '':
+            df = df.loc[df['tissue'].str.contains(tissue, case=False)]
+        if filetype != '':
+            df = df.loc[df['filetype'].str.contains(filetype, case=False)]
+        if filename != '':
+            df = df.loc[df['filename'].str.contains(filename, case=False)]
+
+        # generate list of files
+        df['filepath'] = BASE_S3_DIR + df['id'] + '/' + df['filename']
+
+        if listonly == 'True':
+            # list files, but do not download
+            print(df[['filename', 'tissue', 'assay']])
+        else:
+            outfiles = list(df['filepath'])
+            # download files
+            if outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
+                # s3 file transfer
+                downloaded_files = aws_s3_utils.transfer_file_s3( dict(path=outfiles, outpath=outdir, overwrite='False' if updateonly=='True' else 'True'))
+            else:
+                downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir, overwrite='False' if updateonly=='True' else 'True'))
+    else:
+        print('File {} does not exist. Please first run "bioshed search gdc"'.format(infile))
+    return downloaded_files
+
 
 def combine_all( base_dir ):
-    """ Combines all manifest files into one.
+    """ Combines all manifest files into one tab-delimited manifest.
+    See COLS variable for column names and order.
+
+    base_dir: base directory where GDC-format manifest files reside
+    ---
+    (out): full manifest file
+    (out): category list file
+
     """
     DIRS = ['assay', 'disease', 'filetype', 'platform', 'tissue', 'project']
     COLS = ['filename', 'md5', 'project', 'assay','tissue','disease','species','platform','filetype']
+    MANIFEST_FILE = 'manifest-all-gdc.txt'
+    CATEGORIES_FILE = 'categories-all-gdc.txt'
     manifest_all = {}
+    categories = {}
+
     for DIR in DIRS:
         files_all = os.listdir(os.path.join(base_dir, DIR))
         manifest_files = list(filter(lambda x: x.endswith('.txt'), files_all))
         for mfile in manifest_files:
             category = DIR
             value = mfile.split('.')[-2]
+            # add search term to category list
+            if category not in categories:
+                categories[category] = []
+            categories[category].append(value)
+            # add to manifest dictionary
             with open(os.path.join(base_dir, DIR,mfile),'r') as f:
                 for r in f:
-                    # print(r)
                     rt = r.strip().split('\t')
                     if rt[0] != 'id':
                         _id = rt[0]
@@ -32,15 +260,21 @@ def combine_all( base_dir ):
                             manifest_all[_id]['species'] = 'human'
                             manifest_all[_id]['project'] = 'other'
                         manifest_all[_id][category] = value
-    # print(str(manifest_all))
-    with open('manifest-all-gdc.txt', 'w') as fout:
+
+    # write to manifest file
+    with open(MANIFEST_FILE, 'w') as fout:
         fout.write('id\tfilename\tmd5\tproject\tassay\ttissue\tdisease\tspecies\tplatform\tfiletype\n')
         for mid in list(manifest_all.keys()):
             row = mid+'\t'
             for COL in COLS:
                 row += manifest_all[mid][COL]+'\t' if COL in manifest_all[mid] else '.\t'
             fout.write(row.rstrip(' \t')+'\n')
-    return 'manifest-all-gdc.txt'
+    # write to category file
+    with open(CATEGORIES_FILE,'w') as fout:
+        for category in list(categories.keys()):
+            fout.write('{}\t{}\n'.format(category, str(categories[category])))
+
+    return MANIFEST_FILE
 
 def gdc_run_all( manifest_list_file ):
     """ Runs gdc_manifest_full() for all files
@@ -139,3 +373,42 @@ def gdc_json_to_txt( gdc_json_file ):
         data_category = gdc_entry["data_category"]
         fout.write('\t'.join([file_name, data_category, data_format, case_ids, project_ids])+'\n')
     return fout_name
+
+
+def print_gdc_help():
+    """ Prints the command-line help menu when a user types a wrong input or
+    when a user just types "bioshed search gdc".
+    """
+    print('Welcome to GDC/TCGA dataset search and download, powered by BioShed Atlas.')
+    print('')
+    print('Usage: bioshed search gdc <SEARCH>\n')
+    print('-or-\n')
+    print('Usage: bioshed search tcga <SEARCH>\n')
+    print('Examples:\n')
+    print('\t$ bioshed search tcga breast cancer variants')
+    print('\t$ bioshed search gdc --tissue heart --assay rna-seq')
+    print('')
+    print('--tissue and --assay are examples of search categories used to speed up searches.\n')
+    print('Valid search categories are:')
+    print('--tissue / --assay / --celltype / --disease / --filetype / --platform / --species')
+    print('')
+    print('To see a list of valid search terms for a category, you can just type, for example:\n')
+    print('\t$ bioshed search gdc --filetype')
+    print('')
+    print('Once you have performed a search, bioshed will write dataset results to search_gdc.txt in the current directory.')
+    print('To then download those dataset files, you can then run: \n')
+    print('\t$ bioshed download gdc')
+    print('')
+    print('Further refine the files you want using any of the search categories. For example\n')
+    print('\t$ bioshed download gdc --filetype fastq')
+    print('\t$ bioshed download gdc --id 6fd3fe64-23ba-4db3-8315-1867bdec277d')
+    print('')
+    print('You can list the files before downloading them, by typing:\n')
+    print('\t$ bioshed download gdc --list')
+    print('')
+    print('You can specify a different output directory, including an AWS S3 remote folder:\n')
+    print('\t$ bioshed download gdc --output s3://my/output/folder')
+    print('')
+    print('By default, existing files in the output directory will be overwritten. To download only new files:\n')
+    print('\t$ bioshed download gdc --update')
+    return
