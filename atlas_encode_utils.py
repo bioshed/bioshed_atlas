@@ -395,8 +395,13 @@ def convert_to_search_string( args ):
         if os.path.exists(pre_search_file):
             df = pd.read_csv(pre_search_file, sep='\t')
             if category != '' and terms == '':
-                # if category list is asked for:
-                print('You need to provide a search term for category --{}. Valid search terms are: {}\n'.format(category, list(df['ID'])))
+                # special case: search encode --category where we list valid search terms.
+                unique_terms = list(set(list(df['ID'])))
+                print('Valid search terms for category {}'.format(category))
+                for unique_term in unique_terms:
+                    if unique_term != '.':
+                        print('\t{}'.format(unique_term))
+                raise ValueError('Search not performed.')
             elif 'link' in df.columns and 'ID' in df.columns:
                 pd_query = df[df['ID']==terms]['link'] # df.query('ID=={}'.format(terms))['link']
                 if len(pd_query) > 0:
