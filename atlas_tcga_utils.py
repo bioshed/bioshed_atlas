@@ -66,6 +66,7 @@ def search_gdc( args ):
     search_results = {}
     # dictionary of search terms: {"general": "...", "tissue": "...", "celltype": "..."...}
     search_dict = atlas_utils.parse_search_terms( args['searchterms'] ) if ('searchterms' in args and args['searchterms'] != '') else {}
+    print('THE SEARCH DICT: {}'.str(search_dict))
     if search_dict == {} or 'help' in search_dict:
         print_gdc_help()
     else:
