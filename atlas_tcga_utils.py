@@ -66,14 +66,11 @@ def search_gdc( args ):
     search_results = {}
     # dictionary of search terms: {"general": "...", "tissue": "...", "celltype": "..."...}
     search_dict = atlas_utils.parse_search_terms( args['searchterms'] ) if ('searchterms' in args and args['searchterms'] != '') else {}
-    print('THE SEARCH DICT: {}'.format(str(search_dict)))
     if search_dict == {} or 'help' in search_dict:
         print_gdc_help()
     else:
         search_dict = convert_general_terms( search_dict, CATEGORIES_FILE )
-        print('THE SEARCH DICT: {}'.format(str(search_dict)))
         search_results = get_manifest_rows( search_dict, MANIFEST_FILE )
-        print('SEARCH RESULTS: {}'.format(str(search_results)))
     return search_results
 
 
@@ -126,6 +123,15 @@ def get_manifest_rows( search_dict, MANIFEST_FILE ):
         if k == 'celltype' or (k == 'disease' and ('tumor' in v or 'tumour' in v or 'cancer' in v)):
             k = 'tissue'
         if k in columns:
+            # special case where user wants a list of valid search terms, e.g. search gdc --filetype
+            if len(search_dict) == 1 and v.strip() == "":
+                unique_terms = str('_'.join(list(set(list(df[k]))))).split('_')
+                print('Valid search terms for category {}'.format(k))
+                for unique_term in unique_terms:
+                    if unique_term != '.':
+                        print('\t{}'.format(unique_term))
+                return {}
+            # otherwise we do a search
             terms = quick_utils.format_type(v, 'list')
             for t in terms:
                 t = quick_utils.quick_format(t)
@@ -265,7 +271,7 @@ def combine_all( base_dir ):
                         if category not in manifest_all[_id]:
                             manifest_all[_id][category] = value
                         else:
-                            manifest_all[_id][category] += '-'+value
+                            manifest_all[_id][category] += '_'+value
 
     # write to manifest file
     with open(_MANIFEST_FILE, 'w') as fout:
