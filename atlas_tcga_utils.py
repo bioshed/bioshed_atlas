@@ -406,9 +406,9 @@ def print_gdc_help():
     """
     print('\nWelcome to GDC/TCGA dataset search and download, powered by BioShed Atlas.\n')
 
-    print('----------------------------------')
-    print('BioShed SEARCH')
-    print('----------------------------------\n')
+    print('------------------------------------------------------------')
+    print('BioShed GDC SEARCH')
+    print('------------------------------------------------------------\n')
     print('Usage:')
     print('\tbioshed search gdc <SEARCH>')
     print('\tbioshed search tcga <SEARCH>\n')
@@ -430,9 +430,9 @@ def print_gdc_help():
     print('')
     print('BioShed will write SEARCH results to a file "search_gdc.txt" in the current directory.\n')
 
-    print('----------------------------------')
-    print('BioShed DOWNLOAD')
-    print('----------------------------------\n')
+    print('------------------------------------------------------------')
+    print('BioShed GDC DOWNLOAD')
+    print('------------------------------------------------------------\n')
     print('Usage: To download data files listed in "search_gdc.txt", type\n')
     print('\t$ bioshed download gdc\n')
 

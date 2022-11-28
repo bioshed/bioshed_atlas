@@ -342,36 +342,53 @@ def print_encode_help():
     """ Prints the command-line help menu when a user types a wrong input or
     when a user just types "bioshed search encode".
     """
-    print('Welcome to ENCODE dataset search and download, powered by BioShed Atlas.')
+    print('Welcome to ENCODE dataset search and download, powered by BioShed Atlas.\n')
+    
+    print('------------------------------------------------------------')
+    print('BioShed ENCODE SEARCH')
+    print('------------------------------------------------------------\n')
+
+    print('Usage:')
+    print('\tbioshed search encode <SEARCH>\n')
+
+    print('Search Examples:\n')
+    print('\tGeneral search:\t\t$ bioshed search encode breast cancer rna-seq')
+    print('\tSearch by category:\t$ bioshed search encode --tissue heart --assay chip-seq\n')
+
+    print('Search categories:')
+    print('\t--tissue\tTissue where DNA/RNA/protein material was extracted.')
+    print('\t--celltype\tCell type where DNA/RNA/protein material was extracted.')
+    print('\t--assay\tAssay type performed.') 
+    print('\t--assaytarget\tAssay target gene or protein.')
+    print('\t--disease\tDiagnosed disease type.')
+    print('\t--filetype\tType of data file.')
+    print('\t--platform\tInstrument platform used.')
+    print('\t--species\tHuman, mouse, etc.')
+    print('\t--genome\thg38, hg19, mm10, etc.\n')
+
+    print('To list search terms (example):\n')
+    print('\t$ bioshed search encode --tissue')
     print('')
-    print('Usage: bioshed search encode <SEARCH>\n')
-    print('Examples:\n')
-    print('\t$ bioshed search encode breast cancer rna-seq')
-    print('\t$ bioshed search encode --tissue heart --assay chip-seq')
-    print('')
-    print('--tissue and --assay are examples of search categories used to speed up searches.\n')
-    print('Valid search categories are:')
-    print('--tissue / --assay / --assaytarget / --celltype / --disease / --genome / --filetype / --platform / --species')
-    print('')
-    print('To see a list of valid search terms for a category, you can just type, for example:\n')
-    print('\t$ bioshed search encode --filetype')
-    print('')
-    print('Once you have performed a search, bioshed will write dataset results to search_encode.txt in the current directory.')
-    print('To then download those dataset files, you can then run: \n')
-    print('\t$ bioshed download encode')
-    print('')
+    print('BioShed will write SEARCH results to a file "search_encode.txt" in the current directory.\n')
+
+    print('------------------------------------------------------------')
+    print('BioShed ENCODE DOWNLOAD')
+    print('------------------------------------------------------------\n')
+    print('Usage: To download data files listed in "search_encode.txt", type\n')
+    print('\t$ bioshed download encode\n')
+
     print('Further refine the files you want using any of the search categories. For example\n')
     print('\t$ bioshed download encode --filetype fastq')
-    print('\t$ bioshed download encode --experiment ENCSR597YMV ENCSR562QQA ENCSR568FZM')
-    print('')
+    print('\t$ bioshed download encode --experiment ENCSR597YMV ENCSR562QQA ENCSR568FZM\n')
+    
     print('You can list the files before downloading them, by typing:\n')
-    print('\t$ bioshed download encode --list')
-    print('')
+    print('\t$ bioshed download encode --list\n')
+    
     print('You can specify a different output directory, including an AWS S3 remote folder:\n')
-    print('\t$ bioshed download encode --output s3://my/output/folder')
-    print('')
+    print('\t$ bioshed download encode --output s3://my/output/folder\n')
+    
     print('By default, existing files in the output directory will be overwritten. To download only new files:\n')
-    print('\t$ bioshed download encode --update')
+    print('\t$ bioshed download encode --update\n')
     return
 
 def convert_to_search_string( args ):
