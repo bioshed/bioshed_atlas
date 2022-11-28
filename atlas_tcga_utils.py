@@ -204,7 +204,7 @@ def download_gdc( args ):
         print_gdc_help()
     elif os.path.exists(infile):
         df = pd.read_csv(infile, sep='\t')
-        print(df)
+        # print(df)
         if assay != '':
             df = df.loc[df['assay'].str.contains(assay, case=False)]
         if _id != '':
