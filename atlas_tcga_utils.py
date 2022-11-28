@@ -71,7 +71,9 @@ def search_gdc( args ):
         print_gdc_help()
     else:
         search_dict = convert_general_terms( search_dict, CATEGORIES_FILE )
+        print('THE SEARCH DICT: {}'.format(str(search_dict)))
         search_results = get_manifest_rows( search_dict, MANIFEST_FILE )
+        print('SEARCH RESULTS: {}'.format(str(search_results)))
     return search_results
 
 
