@@ -72,7 +72,7 @@ def search_gdc( args ):
         print_gdc_help()
     else:
         search_dict = convert_general_terms( search_dict, CATEGORIES_FILE )
-        print('Search dictionary: {}'.format(str(search_dict)))        
+        print('Search dictionary: {}'.format(str(search_dict)))
         search_results = get_manifest_rows( search_dict, MANIFEST_FILE )
     return search_results
 
@@ -143,6 +143,15 @@ def get_manifest_rows( search_dict, MANIFEST_FILE ):
     # write filtered data frame to output file for download
     df.index.name = 'index'
     df.to_csv(DEFAULT_SEARCH_FILE, sep='\t')
+
+    print(df)
+    print('')
+    print('Number of files found: {}'.format(str(len(df['filename']))))
+    print('Number of unique assays found: {}'.format(str(len(list(set(df['assay']))))))
+    print('Number of tissues-of-origin found: {}'.format(str(len(list(set(df['tissue']))))))
+
+    print('Search results written to {}.'.format(DEFAULT_SEARCH_FILE))
+    print('Type "bioshed download gdc" to download data files or "bioshed download gdc --list" for file info before downloading.')
     return df
 
 def download_gdc( args ):
