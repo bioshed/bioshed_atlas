@@ -63,6 +63,8 @@ def search_gdc( args ):
     """
     MANIFEST_FILE = os.path.join(SCRIPT_DIR, "files/gdc/manifest-all-gdc.txt.gz")
     CATEGORIES_FILE = os.path.join(SCRIPT_DIR, 'files/gdc/categories-all-gdc.txt')
+    print('Using manifest file: {}'.format(MANIFEST_FILE))
+    print('Using category file: {}'.format(CATEGORIES_FILE))
     search_results = {}
     # dictionary of search terms: {"general": "...", "tissue": "...", "celltype": "..."...}
     search_dict = atlas_utils.parse_search_terms( args['searchterms'] ) if ('searchterms' in args and args['searchterms'] != '') else {}
@@ -70,6 +72,7 @@ def search_gdc( args ):
         print_gdc_help()
     else:
         search_dict = convert_general_terms( search_dict, CATEGORIES_FILE )
+        print('Search dictionary: {}'.format(str(search_dict)))        
         search_results = get_manifest_rows( search_dict, MANIFEST_FILE )
     return search_results
 
