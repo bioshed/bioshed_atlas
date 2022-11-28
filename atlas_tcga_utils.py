@@ -233,8 +233,8 @@ def combine_all( base_dir ):
     """
     DIRS = ['assay', 'disease', 'filetype', 'platform', 'tissue', 'project']
     COLS = ['filename', 'md5', 'project', 'assay','tissue','disease','species','platform','filetype']
-    MANIFEST_FILE = 'manifest-all-gdc.txt'
-    CATEGORIES_FILE = 'categories-all-gdc.txt'
+    _MANIFEST_FILE = 'manifest-all-gdc.txt'
+    _CATEGORIES_FILE = 'categories-all-gdc.txt'
     manifest_all = {}
     categories = {}
 
@@ -262,10 +262,13 @@ def combine_all( base_dir ):
                             manifest_all[_id]['md5'] = _md5
                             manifest_all[_id]['species'] = 'human'
                             manifest_all[_id]['project'] = 'other'
-                        manifest_all[_id][category] = value
+                        if category not in manifest_all[_id]:
+                            manifest_all[_id][category] = value
+                        else:
+                            manifest_all[_id][category] += '-'+value
 
     # write to manifest file
-    with open(MANIFEST_FILE, 'w') as fout:
+    with open(_MANIFEST_FILE, 'w') as fout:
         fout.write('id\tfilename\tmd5\tproject\tassay\ttissue\tdisease\tspecies\tplatform\tfiletype\n')
         for mid in list(manifest_all.keys()):
             row = mid+'\t'
@@ -273,11 +276,12 @@ def combine_all( base_dir ):
                 row += manifest_all[mid][COL]+'\t' if COL in manifest_all[mid] else '.\t'
             fout.write(row.rstrip(' \t')+'\n')
     # write to category file
-    with open(CATEGORIES_FILE,'w') as fout:
+    with open(_CATEGORIES_FILE,'w') as fout:
         for category in list(categories.keys()):
             fout.write('{}\t{}\n'.format(category, str(categories[category])))
 
-    return MANIFEST_FILE
+    print(str(categories))
+    return _MANIFEST_FILE
 
 def gdc_run_all( manifest_list_file ):
     """ Runs gdc_manifest_full() for all files
@@ -384,8 +388,8 @@ def print_gdc_help():
     """
     print('Welcome to GDC/TCGA dataset search and download, powered by BioShed Atlas.')
     print('')
-    print('Usage: bioshed search gdc <SEARCH>\n')
-    print('-or-\n')
+    print('Usage: bioshed search gdc <SEARCH>')
+    print('-or-')
     print('Usage: bioshed search tcga <SEARCH>\n')
     print('Examples:\n')
     print('\t$ bioshed search tcga breast cancer variants')
