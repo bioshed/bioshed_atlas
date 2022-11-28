@@ -61,8 +61,8 @@ def search_gdc( args ):
     $ bioshed search gdc --help
     $ bioshed download gdc --help
     """
-    MANIFEST_FILE = "files/gdc/manifest-all-gdc.txt.gz"
-    CATEGORIES_FILE = 'files/gdc/categories-all-gdc.txt'
+    MANIFEST_FILE = os.path.join(SCRIPT_DIR, "files/gdc/manifest-all-gdc.txt.gz")
+    CATEGORIES_FILE = os.path.join(SCRIPT_DIR, 'files/gdc/categories-all-gdc.txt')
     search_results = {}
     # dictionary of search terms: {"general": "...", "tissue": "...", "celltype": "..."...}
     search_dict = atlas_utils.parse_search_terms( args['searchterms'] ) if ('searchterms' in args and args['searchterms'] != '') else {}
