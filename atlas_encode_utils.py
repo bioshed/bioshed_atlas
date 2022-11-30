@@ -106,7 +106,7 @@ def encode_search_url( args ):
     if returntype.lower() == 'raw':
         return results_raw
     elif searchtype.lower() == 'full':
-        return get_full_info_from_encode_json( dict(results=results_raw, sortby=returntype))
+        return get_full_info_from_encode_json( dict(results=results_raw, sortby=returntype, search_string=search_url))
     elif returntype.lower() == 'experiment':
         return get_experiments_from_encode_json( dict(results=results_raw))
     elif returntype.lower() == 'file':
@@ -119,6 +119,7 @@ def get_full_info_from_encode_json( args ):
     results: results_raw
     sortby: which column to sort by - full/experiment (default), file, assay, etc...
     returntype: JSON or dataframe (default)
+    search_string: original search string
     ---
     fullinfo: JSON or dataframe
     DEFAULT_SEARCH_FILE (outfile): table
@@ -140,6 +141,7 @@ def get_full_info_from_encode_json( args ):
     results = args['results']
     sortby = args['sortby'] if 'sortby' in args else 'experiment'
     returntype = args['returntype'] if 'returntype' in args else 'pandas'
+    search_string = args['search_string'] if 'search_string' in args else ''
 
     if sortby in ['full', 'experiment']:
         tbl = {"experiment": [], "assay": [], "celltype": [], "species": [], "accession": [], "file": []}
@@ -183,9 +185,11 @@ def get_full_info_from_encode_json( args ):
             tbl["file"].append(v["file"] if "file" in v else [])
 
     if returntype in ['pandas', 'dataframe']:
+        with open(DEFAULT_SEARCH_FILE,'w') as fout:
+            fout.write('# bioshed search encode {}\n'.format(search_string))
         tbl_df = pd.DataFrame(tbl)
         tbl_df.index.name = 'index'
-        tbl_df.to_csv(DEFAULT_SEARCH_FILE, sep='\t')
+        tbl_df.to_csv(DEFAULT_SEARCH_FILE, sep='\t', mode='a')
         print('Search results written to {}.'.format(DEFAULT_SEARCH_FILE.split('/')[-1]))
         print('Type "bioshed download encode" to download data files or "bioshed download encode --list" for file info before downloading.')
         return tbl_df
@@ -279,11 +283,18 @@ def download_encode( args ):
     eids = []
     annotation_info = []
     ANNOTATION_INFO_FILE = os.path.join(os.getcwd(),'annotation_encode.txt')
+    original_search_command = ''
 
     if 'help' in dd:
         print_encode_help()
     elif os.path.exists(infile):
-        df = pd.read_csv(infile, sep='\t')
+        # get comment line (first line), if there
+        with open(infile,'r') as f:
+            r = f.readline()
+            if r[0] == '#':
+                original_search_command = r.strip()
+        # get table
+        df = pd.read_csv(infile, sep='\t', comment='#')
         if assay != '':
             df = df.loc[df['assay'].str.contains(assay, case=False)]
         if species != '':
@@ -333,6 +344,8 @@ def download_encode( args ):
                 downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir, overwrite='False' if updateonly=='True' else 'True'))
             # write out annotation info
             with open(ANNOTATION_INFO_FILE,'w') as fout:
+                if original_search_command != '':
+                    fout.write(original_search_command+'\n')
                 for row in annotation_info:
                     datafile = row.strip().split('\t')[0]
                     annots = str(row.strip().split('\t')[-1]).lstrip('INFO (').rstrip(')').split(';')

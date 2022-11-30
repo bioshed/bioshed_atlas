@@ -66,14 +66,15 @@ def search_gdc( args ):
     print('Using manifest file: {}'.format(MANIFEST_FILE))
     print('Using category file: {}'.format(CATEGORIES_FILE))
     search_results = {}
+    search_string = args['searchterms'] if 'searchterms' in args else ''
     # dictionary of search terms: {"general": "...", "tissue": "...", "celltype": "..."...}
-    search_dict = atlas_utils.parse_search_terms( args['searchterms'] ) if ('searchterms' in args and args['searchterms'] != '') else {}
+    search_dict = atlas_utils.parse_search_terms( search_string ) if search_string != '' else {}
     if search_dict == {} or 'help' in search_dict:
         print_gdc_help()
     else:
         search_dict = convert_general_terms( search_dict, CATEGORIES_FILE )
         print('Search dictionary: {}'.format(str(search_dict)))
-        search_results = get_manifest_rows( search_dict, MANIFEST_FILE )
+        search_results = get_manifest_rows( search_dict, search_string, MANIFEST_FILE )
     return search_results
 
 
@@ -107,13 +108,14 @@ def convert_general_terms( search_dict, CATEGORIES_FILE ):
     return search_dict
 
 
-def get_manifest_rows( search_dict, MANIFEST_FILE ):
+def get_manifest_rows( search_dict, search_string, MANIFEST_FILE ):
     """
     Gets rows from GDC-formatted manifest file that match search terms.
     Valid search terms are:
     --tissue / --assay / --celltype / --disease / --filetype / --platform / --species
 
     search_dict: dictionary of search terms: {"general": "...", "tissue": "...", "assay": "..."}
+    search_string: original search string
     ---
     results: data frame of results
     (out): filtered GDC-format manifest file
@@ -141,8 +143,10 @@ def get_manifest_rows( search_dict, MANIFEST_FILE ):
                 if t not in GENERIC_TERMS:
                     df = df.loc[df[k].str.contains(t, case=False)]
     # write filtered data frame to output file for download
+    with open(DEFAULT_SEARCH_FILE,'w') as fout:
+        fout.write('# bioshed search gdc {}\n'.format(search_string))
     df.index.name = 'index'
-    df.to_csv(DEFAULT_SEARCH_FILE, sep='\t')
+    df.to_csv(DEFAULT_SEARCH_FILE, sep='\t', mode='a')
 
     print(df)
     print('')
@@ -201,11 +205,18 @@ def download_gdc( args ):
     downloaded_files = []
     annotation_info = []
     ANNOTATION_INFO_FILE = os.path.join(os.getcwd(),'annotation_gdc.txt')
+    original_search_command = ''
 
     if 'help' in dd:
         print_gdc_help()
     elif os.path.exists(infile):
-        df = pd.read_csv(infile, sep='\t')
+        # get comment line (first line), if there
+        with open(infile,'r') as f:
+            r = f.readline()
+            if r[0] == '#':
+                original_search_command = r.strip()
+        # get table                        
+        df = pd.read_csv(infile, sep='\t', comment='#')
         # print(df)
         if assay != '':
             df = df.loc[df['assay'].str.contains(assay, case=False)]
@@ -228,6 +239,12 @@ def download_gdc( args ):
         if listonly == 'True':
             # list files, but do not download
             print(df[['filename', 'tissue', 'assay']])
+            with open(ANNOTATION_INFO_FILE,'w') as fout:
+                if original_search_command != '':
+                    fout.write(original_search_command+'\n')
+                fout.write('FILE\tEXPERIMENT\tASSAY\tCELLTYPE\tSPECIES\n')
+                for idx, row in df.iterrows():
+                    fout.write('{}\t{}\t{}\t{}\t{}\n'.format(str(row['filename']), '.', str(row['assay']).replace('_','/'), str(row['tissue']).replace('_','/'), 'human'))
 
         else:
             outfiles = list(df['filepath'])
@@ -240,6 +257,8 @@ def download_gdc( args ):
 
             # print annotation info
             with open(ANNOTATION_INFO_FILE,'w') as fout:
+                if original_search_command != '':
+                    fout.write(original_search_command+'\n')
                 fout.write('FILE\tEXPERIMENT\tASSAY\tCELLTYPE\tSPECIES\n')
                 for idx, row in df.iterrows():
                     fout.write('{}\t{}\t{}\t{}\t{}\n'.format(str(row['filename']), '.', str(row['assay']).replace('_','/'), str(row['tissue']).replace('_','/'), 'human'))
