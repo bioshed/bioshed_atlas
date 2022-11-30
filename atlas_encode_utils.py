@@ -230,12 +230,16 @@ def get_files_from_encode_json( args ):
         # original search was an experiment
         if "files" in results:
             for f in results["files"]:
-                if cloud in ['s3','aws','amazon']:
-                    if "s3_uri" in f:
+                if cloud in ['s3','aws','amazon']:                    
+                    if "s3_uri" in f and quick_utils.cloud_initialized(dict(cloud='aws')):
                         relevant_files.append(f["s3_uri"])
+                    elif "cloud_metadata" in f and "url" in f["cloud_metadata"]:
+                        relevant_files.append(f["cloud_metadata"]["url"])
     elif searchtype in ['file']:
-        if "s3_uri" in results:
+        if "s3_uri" in results and quick_utils.cloud_initialized(dict(cloud='aws')):
             relevant_files.append(results["s3_uri"])
+        elif "cloud_metadata" in f and "url" in f["cloud_metadata"]:
+            revelant_files.append(results["cloud_metadata"]["url"])        
     return relevant_files
 
 def download_encode( args ):
@@ -264,6 +268,7 @@ def download_encode( args ):
 
     [NOTE] Use str.contains:  df2 = df.loc[df['celltype'].str.contains('heart', case=False)]
     [DONE] s3 file transfer function in aws_s3_utils
+    [TODO] create https to s3 transfer, https to gcp transfer, gcp to s3 transfer etc
     """
     INFO_COLUMNS = ['experiment', 'assay', 'celltype', 'species']
     dd = atlas_utils.parse_search_terms( args['downloadstr'] if 'downloadstr' in args else '')
@@ -338,10 +343,22 @@ def download_encode( args ):
         else:
             # download files
             if outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
-                # s3 file transfer
+                # s3-to-s3 file transfer
                 downloaded_files = aws_s3_utils.transfer_file_s3( dict(path=outfiles, outpath=outdir, overwrite='False' if updateonly=='True' else 'True'))
-            else:
+            elif not outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
+                # s3 download to local
                 downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir, overwrite='False' if updateonly=='True' else 'True'))
+            elif not outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('http'):
+                # http download to local
+                for outfile in outfiles:
+                    print('Downloading {}'.format(outfile))                
+                    # get http(s) file    
+                    _response = quick_utils.get_request( dict(url=outfile))
+                    # write to local file
+                    open(os.path.join(outdir, quick_utils.get_file_only(outfile)), 'wb').write(_response.content)
+                    # save list of downloaded files
+                    downloaded_files.append(os.path.join(outdir, quick_utils.get_file_only(outfile)))
+            
             # write out annotation info
             with open(ANNOTATION_INFO_FILE,'w') as fout:
                 if original_search_command != '':

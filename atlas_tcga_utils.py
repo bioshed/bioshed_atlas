@@ -189,6 +189,7 @@ def download_gdc( args ):
     https://stackoverflow.com/questions/26577516/how-to-test-if-a-string-contains-one-of-the-substrings-in-a-list-in-pandas
     """
     BASE_S3_DIR = "s3://tcga-2-open/"
+    BASE_HTTPS_DIR = "https://api.gdc.cancer.gov/data/"
     INFO_COLUMNS = ['id', 'assay', 'tissue']
     dd = atlas_utils.parse_search_terms( args['downloadstr'] if 'downloadstr' in args else '')
     infile = dd['input'] if 'input' in dd else DEFAULT_SEARCH_FILE
@@ -234,8 +235,11 @@ def download_gdc( args ):
             df = df.loc[df['filename'].str.contains(filename, case=False)]
 
         # generate list of files
-        df['filepath'] = BASE_S3_DIR + df['id'] + '/' + df['filename']
-
+        if quick_utils.cloud_initialized(dict(cloud='aws')):
+            df['filepath'] = BASE_S3_DIR + df['id'] + '/' + df['filename']
+        else:
+            df['filepath'] = BASE_HTTPS_DIR + df['id']
+        
         if listonly == 'True':
             # list files, but do not download
             print(df[['filename', 'tissue', 'assay']])
@@ -252,8 +256,21 @@ def download_gdc( args ):
             if outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
                 # s3 file transfer
                 downloaded_files = aws_s3_utils.transfer_file_s3( dict(path=outfiles, outpath=outdir, overwrite='False' if updateonly=='True' else 'True'))
-            else:
+            elif not outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
                 downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir, overwrite='False' if updateonly=='True' else 'True'))
+            elif not outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('http'):
+                # http download to local
+                for idx, row in df.iterrows():
+                    outfile = row['filepath']
+                    outfile_name = row['filename']
+                    print('Downloading {}'.format(outfile_name))
+                    # get http(s) file
+                    _response = quick_utils.get_request( dict(url=outfile))
+                    # write to local file
+                    open(os.path.join(outdir, quick_utils.get_file_only(outfile_name)), 'wb').write(_response.content)
+                    # save list of downloaded files
+                    downloaded_files.append(os.path.join(outdir, quick_utils.get_file_only(outfile_name)))
+
 
             # print annotation info
             with open(ANNOTATION_INFO_FILE,'w') as fout:
