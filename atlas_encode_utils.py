@@ -324,12 +324,6 @@ def download_encode( args ):
             # list files, but do not download
             for annot in annotation_info:
                 print(annot)
-            with open(ANNOTATION_INFO_FILE,'w') as fout:
-                for row in annotation_info:
-                    datafile = row.strip().split('\t')[0]
-                    annots = str(row.strip().split('\t')[-1]).lstrip('INFO (').rstrip(')').split(';')
-                    fout.write('{}\t{}\n'.format(datafile, '\t'.join(annots)))
-
         else:
             # download files
             if outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
@@ -410,6 +404,8 @@ def print_encode_help():
     
     print('By default, existing files in the output directory will be overwritten. To download only new files:\n')
     print('\t$ bioshed download encode --update\n')
+
+    print('Successful download will also generate an associated annotation file "annotation_encode.txt".\n')
     return
 
 def convert_to_search_string( args ):

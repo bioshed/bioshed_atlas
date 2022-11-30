@@ -199,6 +199,8 @@ def download_gdc( args ):
     updateonly = 'True' if 'update' in dd else ''
     outfiles = []
     downloaded_files = []
+    annotation_info = []
+    ANNOTATION_INFO_FILE = os.path.join(os.getcwd(),'annotation_gdc.txt')
 
     if 'help' in dd:
         print_gdc_help()
@@ -226,6 +228,7 @@ def download_gdc( args ):
         if listonly == 'True':
             # list files, but do not download
             print(df[['filename', 'tissue', 'assay']])
+
         else:
             outfiles = list(df['filepath'])
             # download files
@@ -234,6 +237,13 @@ def download_gdc( args ):
                 downloaded_files = aws_s3_utils.transfer_file_s3( dict(path=outfiles, outpath=outdir, overwrite='False' if updateonly=='True' else 'True'))
             else:
                 downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir, overwrite='False' if updateonly=='True' else 'True'))
+
+            # print annotation info
+            with open(ANNOTATION_INFO_FILE,'w') as fout:
+                fout.write('FILE\tEXPERIMENT\tASSAY\tCELLTYPE\tSPECIES\n')
+                for idx, row in df.iterrows():
+                    fout.write('{}\t{}\t{}\t{}\t{}\n'.format(str(row['filename']), '.', str(row['assay']).replace('_','/'), str(row['tissue']).replace('_','/'), 'human'))
+
     else:
         print('File {} does not exist. Please first run "bioshed search gdc"'.format(infile))
     return downloaded_files
@@ -448,4 +458,5 @@ def print_gdc_help():
     
     print('By default, existing files in the output directory will be overwritten. To download only new files:\n')
     print('\t$ bioshed download gdc --update\n')
+    print('Successful download will also generate an associated annotation file "annotation_gdc.txt".\n')
     return
