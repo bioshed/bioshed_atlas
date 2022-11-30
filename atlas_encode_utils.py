@@ -7,7 +7,7 @@ sys.path.append('bioshed_utils/')
 import quick_utils
 import aws_s3_utils
 
-DEFAULT_SEARCH_FILE = "search_encode.txt"
+DEFAULT_SEARCH_FILE = os.path.join(os.getcwd(),"search_encode.txt")
 
 def search_encode( args ):
     """ Entrypoint for an ENCODE search.
@@ -186,7 +186,7 @@ def get_full_info_from_encode_json( args ):
         tbl_df = pd.DataFrame(tbl)
         tbl_df.index.name = 'index'
         tbl_df.to_csv(DEFAULT_SEARCH_FILE, sep='\t')
-        print('Search results written to {}.'.format(DEFAULT_SEARCH_FILE))
+        print('Search results written to {}.'.format(DEFAULT_SEARCH_FILE.split('/')[-1]))
         print('Type "bioshed download encode" to download data files or "bioshed download encode --list" for file info before downloading.')
         return tbl_df
     else:
@@ -215,7 +215,7 @@ def get_files_from_encode_json( args ):
     relevant_files: list of S3 file URIs
 
     [TODO] for 'file' searchtype, can get HTTPS object link via 'cloud_metadata' key.
-
+    [TODO] deal with JSON entries that don't have s3_uri (e.g., SRA files) - GET request: https://www.encodeproject.org/experiments/ENCSR860HAA/
     """
     results = args['results']
     searchtype = args['searchtype'] if 'searchtype' in args else ''
@@ -224,11 +224,14 @@ def get_files_from_encode_json( args ):
     relevant_files = []
     if searchtype in ['experiment']:
         # original search was an experiment
-        for f in results["files"]:
-            if cloud in ['s3','aws','amazon']:
-                relevant_files.append(f["s3_uri"])
+        if "files" in results:
+            for f in results["files"]:
+                if cloud in ['s3','aws','amazon']:
+                    if "s3_uri" in f:
+                        relevant_files.append(f["s3_uri"])
     elif searchtype in ['file']:
-        relevant_files.append(results["s3_uri"])
+        if "s3_uri" in results:
+            relevant_files.append(results["s3_uri"])
     return relevant_files
 
 def download_encode( args ):
@@ -274,6 +277,8 @@ def download_encode( args ):
     outfiles_info = {}
     downloaded_files = []
     eids = []
+    annotation_info = []
+    ANNOTATION_INFO_FILE = os.path.join(os.getcwd(),'annotation_encode.txt')
 
     if 'help' in dd:
         print_encode_help()
@@ -310,11 +315,21 @@ def download_encode( args ):
                 for removed_file in removed_files:
                     removed_info = outfiles_info.pop(removed_file, 'not found')
 
+        # gather annotation info
+        annotation_info.append('FILE\tINFO (EXPT; ASSAY; CELLTYPE; SPECIES)')
+        for outfile, outfile_info in outfiles_info.items():
+            annotation_info.append('{}\t{}'.format(quick_utils.get_file_only(outfile), str(outfile_info)))
+
         if listonly == 'True':
             # list files, but do not download
-            print('FILE\tINFO (EXPT; ASSAY; CELLTYPE; SPECIES)')
-            for outfile, outfile_info in outfiles_info.items():
-                print('{}\t{}'.format(quick_utils.get_file_only(outfile), str(outfile_info)))
+            for annot in annotation_info:
+                print(annot)
+            with open(ANNOTATION_INFO_FILE,'w') as fout:
+                for row in annotation_info:
+                    datafile = row.strip().split('\t')[0]
+                    annots = str(row.strip().split('\t')[-1]).lstrip('INFO (').rstrip(')').split(';')
+                    fout.write('{}\t{}\n'.format(datafile, '\t'.join(annots)))
+
         else:
             # download files
             if outdir.startswith('s3') and len(outfiles) > 0 and outfiles[0].startswith('s3'):
@@ -322,6 +337,12 @@ def download_encode( args ):
                 downloaded_files = aws_s3_utils.transfer_file_s3( dict(path=outfiles, outpath=outdir, overwrite='False' if updateonly=='True' else 'True'))
             else:
                 downloaded_files = aws_s3_utils.download_file_s3( dict(path=outfiles, localdir=outdir, overwrite='False' if updateonly=='True' else 'True'))
+            # write out annotation info
+            with open(ANNOTATION_INFO_FILE,'w') as fout:
+                for row in annotation_info:
+                    datafile = row.strip().split('\t')[0]
+                    annots = str(row.strip().split('\t')[-1]).lstrip('INFO (').rstrip(')').split(';')
+                    fout.write('{}\t{}\n'.format(datafile, '\t'.join(annots)))
     else:
         print('File {} does not exist. Please first run "bioshed search encode"'.format(infile))
     return downloaded_files
@@ -358,7 +379,7 @@ def print_encode_help():
     print('Search categories:')
     print('\t--tissue\tTissue where DNA/RNA/protein material was extracted.')
     print('\t--celltype\tCell type where DNA/RNA/protein material was extracted.')
-    print('\t--assay\tAssay type performed.') 
+    print('\t--assay\t\tAssay type performed.') 
     print('\t--assaytarget\tAssay target gene or protein.')
     print('\t--disease\tDiagnosed disease type.')
     print('\t--filetype\tType of data file.')
